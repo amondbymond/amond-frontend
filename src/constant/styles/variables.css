@@ -1,0 +1,8 @@
+/* 공통 색상들 */
+:root {
+  --main-color: #ff8000; /* 메인 컬러 */
+  /* 다른 변수들 필요시 활용(--로 시작, 케밥케이스(-)를 거의 표준으로  */
+  /* --secondary-color: #999999; */
+  /* --example-color: #FFFFFF; */
+  /* --text-color: #999999; */
+}

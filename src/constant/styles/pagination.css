@@ -1,0 +1,70 @@
+@import "variables.css";
+
+/* 페이지네이션 기본 속성 및 마진 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* disabled 색상 */
+.pagination .disabled a {
+  color: #666666;
+}
+
+ul.pagination li.disabled {
+  color: #666666;
+  border-color: #666666;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul.pagination li {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+ul.pagination li:first-child {
+  border-radius: 5px 0 0 5px;
+}
+
+ul.pagination li:last-child {
+  border-radius: 0 5px 5px 0;
+}
+
+ul.pagination li a {
+  text-decoration: none;
+  color: #999999;
+  font-size: 14px;
+}
+
+ul.pagination li.active a {
+  color: var(--main-color);
+}
+
+ul.pagination li.active {
+  color: var(--main-color);
+  border-color: var(--main-color);
+}
+
+ul.pagination li a:hover,
+ul.pagination li a.active {
+  opacity: 0.8;
+}
+
+.page-selection {
+  width: 48px;
+  height: 30px;
+  color: #fff;
+}

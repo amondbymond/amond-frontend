@@ -1,0 +1,117 @@
+.ql-editor {
+  min-height: 300px;
+}
+
+.ql-toolbar.ql-snow {
+  border-radius: 8px 8px 0px 0px;
+}
+.ql-container.ql-snow {
+  border-radius: 0px 0px 8px 8px;
+}
+
+.ql-editor[contenteditable="true"] {
+  max-height: 400px;
+}
+
+.ql-editor p,
+.ql-editor ol,
+.ql-editor ul,
+.ql-editor pre,
+.ql-editor blockquote,
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3,
+.ql-editor h4,
+.ql-editor h5,
+.ql-editor h6 {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
+}
+
+.ql-editor h1 {
+  font-size: 32px !important;
+}
+
+.ql-editor h2 {
+  font-size: 28px !important;
+}
+
+.ql-editor h3 {
+  font-size: 24px !important;
+}
+
+.ql-editor h4 {
+  font-size: 22px !important;
+}
+
+.ql-editor h5 {
+  font-size: 20px !important;
+  line-height: 1.6rem;
+}
+
+.ql-editor h6 {
+  font-size: 18px !important;
+  line-height: 1rem;
+}
+
+.ql-editor p {
+  font-size: 16px !important;
+  line-height: 20px !important;
+}
+
+iframe {
+  aspect-ratio: 16/9;
+}
+
+.ql-editor img {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .ql-editor {
+    min-height: 200px;
+  }
+
+  .ql-editor {
+    padding: 12px !important;
+  }
+
+  /* 툴바 */
+  .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 4px !important;
+  }
+
+  .ql-toolbar.ql-snow {
+    padding-top: 13px !important;
+  }
+  .ql-toolbar.ql-snow > * {
+    margin-bottom: 3px; /* 또는 원하는 간격으로 조정 */
+  }
+  .quill iframe {
+    max-width: 300px;
+  }
+
+  .ql-editor p {
+    font-size: 1rem;
+    line-height: 25.6px;
+  }
+}
+
+@media (min-width: 768px) {
+  .ql-editor {
+    padding: 15px !important;
+  }
+
+  .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 12px !important;
+  }
+
+  .quill iframe {
+    max-width: 696px;
+  }
+}
+
+.ql-editor[contenteditable="false"] {
+  padding: 0 !important;
+}
