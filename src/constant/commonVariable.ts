@@ -2,7 +2,7 @@
 export const url =
   process.env.NEXT_PUBLIC_APP_ENV === "dev"
     ? "http://localhost:9988"
-    : "https://api.mond.io.kr";
+    : process.env.NEXT_PUBLIC_API_URL || "https://api.mond.io.kr";
 export const isDev = process.env.NEXT_PUBLIC_APP_ENV === "dev" ? true : false;
 
 export const s3ImageUrl = "https://amond-image.s3.ap-northeast-2.amazonaws.com";
