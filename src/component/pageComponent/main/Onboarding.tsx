@@ -86,6 +86,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     if (currentStep === 6) {
       // Move to summary step (Step 7)
       setCurrentStep(7);
+      // Scroll to top when showing summary
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (currentStep === 7) {
       saveBrandInput();
     } else {
