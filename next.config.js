@@ -1,11 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false, // 일시적으로 비활성화 (INICIS 중복 요청 방지)
-  api: {
-    bodyParser: {
-      sizeLimit: '1mb',
-    },
-  },
   // Disable x-powered-by header
   poweredByHeader: false,
   // Allow INICIS domains

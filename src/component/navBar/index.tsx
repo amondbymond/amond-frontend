@@ -295,12 +295,10 @@ export default function NavBar() {
                       </>
                     ) : (
                       <>
-                        {userInfo?.id ? (
-                          <>
-                            {/* Person Icon for Sidebar Toggle */}
-                            <IconButton
-                              onClick={toggleSidebar}
-                              sx={{
+                        {/* Always show Person Icon for Sidebar Toggle */}
+                        <IconButton
+                          onClick={toggleSidebar}
+                          sx={{
                                 color: "white",
                                 border: "2px solid white",
                                 ml: 1,
@@ -313,39 +311,6 @@ export default function NavBar() {
                             >
                               <PersonIcon sx={{ fontSize: "20px" }} />
                             </IconButton>
-                          </>
-                        ) : (
-                          <>
-                            <Link href="/login">
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                sx={{
-                                  border: "1px solid #FFF",
-                                  "&:hover": {
-                                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                                  },
-                                }}
-                              >
-                                로그인
-                              </Button>
-                            </Link>
-                            <Link href="/login/register">
-                              <Button
-                                variant="contained"
-                                sx={{
-                                  backgroundColor: "white",
-                                  color: "primary.main",
-                                  "&:hover": {
-                                    backgroundColor: "rgba(255, 255, 255, 0.9)",
-                                  },
-                                }}
-                              >
-                                회원가입
-                              </Button>
-                            </Link>
-                          </>
-                        )}
                       </>
                     )}
                   </RowStack>
@@ -359,8 +324,8 @@ export default function NavBar() {
         <Box sx={{ height: navBarHeight }} />
       </header>
 
-      {/* Toggleable UserSidebar */}
-      {sidebarOpen && userInfo?.id && (
+      {/* Toggleable UserSidebar - Show for all users including guests */}
+      {sidebarOpen && (
         <UserSidebar onClose={() => setSidebarOpen(false)} />
       )}
 

@@ -19,11 +19,12 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
   const [loading, setLoading] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
 
-  if (!userInfo) return null;
-
-  // Use available fields from UserDataType
-  const displayName = userInfo.authType || "회원";
-  const displayUsername = `@user_${userInfo.id}`;
+  // Handle guest users - show sidebar even without userInfo
+  const isGuest = !userInfo?.id;
+  
+  // Use available fields from UserDataType or guest defaults
+  const displayName = isGuest ? "게스트 사용자" : (userInfo.authType || "회원");
+  const displayUsername = isGuest ? "@guest" : `@user_${userInfo.id}`;
 
   const handleLogout = async () => {
     // You may want to call your logout API here
@@ -105,39 +106,43 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
           </Box>
         </Box>
 
-        {/* Navigation Buttons */}
-        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-          <Button
-            variant="contained"
-            color="warning"
-            sx={{ flex: 1, fontWeight: 700, borderRadius: 2 }}
-            onClick={goToProjectPage}
-            disabled={loading}
-          >
-            내 캘린더
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ flex: 1, bgcolor: "#FFF3E0", color: "#FF9800", fontWeight: 700, borderRadius: 2, '&:hover': { bgcolor: "#FFE0B2" } }}
-            onClick={goToProjectPage}
-            disabled={loading}
-          >
-            새 콘텐츠
-          </Button>
-        </Box>
+        {/* Navigation Buttons - Only show for logged in users */}
+        {!isGuest && (
+          <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{ flex: 1, fontWeight: 700, borderRadius: 2 }}
+              onClick={goToProjectPage}
+              disabled={loading}
+            >
+              내 캘린더
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ flex: 1, bgcolor: "#FFF3E0", color: "#FF9800", fontWeight: 700, borderRadius: 2, '&:hover': { bgcolor: "#FFE0B2" } }}
+              onClick={goToProjectPage}
+              disabled={loading}
+            >
+              새 콘텐츠
+            </Button>
+          </Box>
+        )}
 
         <Divider sx={{ my: 2 }} />
 
         {/* Links and Actions */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Button
-            variant="text"
-            sx={{ justifyContent: "flex-start", color: "#333", fontWeight: 600 }}
-            onClick={() => router.push("/profile")}
-            disabled={loading}
-          >
-            프로필
-          </Button>
+          {!isGuest && (
+            <Button
+              variant="text"
+              sx={{ justifyContent: "flex-start", color: "#333", fontWeight: 600 }}
+              onClick={() => router.push("/profile")}
+              disabled={loading}
+            >
+              프로필
+            </Button>
+          )}
           <Button
             variant="text"
             sx={{ justifyContent: "flex-start", color: "#333" }}
@@ -174,15 +179,27 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
           제작자에게 문의하기
         </Button>
 
-        <Button
-          variant="text"
-          color="error"
-          fullWidth
-          sx={{ fontWeight: 700 }}
-          onClick={handleLogout}
-        >
-          로그아웃
-        </Button>
+        {isGuest ? (
+          <Button
+            variant="contained"
+            color="warning"
+            fullWidth
+            sx={{ fontWeight: 700 }}
+            onClick={() => router.push("/login")}
+          >
+            로그인하기
+          </Button>
+        ) : (
+          <Button
+            variant="text"
+            color="error"
+            fullWidth
+            sx={{ fontWeight: 700 }}
+            onClick={handleLogout}
+          >
+            로그아웃
+          </Button>
+        )}
         <ContactMakerModal open={contactModalOpen} onClose={() => setContactModalOpen(false)} />
       </Box>
     </Fade>
