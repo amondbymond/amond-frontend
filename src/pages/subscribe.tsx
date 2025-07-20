@@ -1,10 +1,11 @@
 import { Box, Typography, Paper, Divider, Modal, TextField, Checkbox, FormControlLabel, Chip } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { apiCall } from "@/module/utils/api";
 import InicisPayment from "@/component/pageComponent/subscribe/InicisPayment";
 import UnifiedButton from "@/component/ui/UnifiedButton";
 import ContactMakerModal from "@/component/ui/ContactMakerModal";
+import LoginContext from "@/module/ContextAPI/LoginContext";
 
 type MuiButtonColor = 'primary' | 'secondary' | 'inherit' | 'success' | 'error' | 'info' | 'warning';
 
@@ -389,6 +390,7 @@ function ProTrialModal({ open, onClose }: { open: boolean; onClose: () => void }
 
 export default function SubscribePage() {
   const router = useRouter();
+  const { userInfo: loginUserInfo } = useContext(LoginContext);
   const [proModalOpen, setProModalOpen] = useState(false);
   const [userInfo, setUserInfo] = useState<any>(null);
   const [currentPlan, setCurrentPlan] = useState<string>("basic");
@@ -555,7 +557,15 @@ export default function SubscribePage() {
                 </Typography>
                 <PlanButton 
                   plan={plan} 
-                  onOrangeClick={() => setProModalOpen(true)} 
+                  onOrangeClick={() => {
+                    // Check if user is logged in before opening payment modal
+                    if (!loginUserInfo?.id) {
+                      alert("구독하시려면 먼저 로그인해주세요.");
+                      router.push("/login");
+                      return;
+                    }
+                    setProModalOpen(true);
+                  }} 
                   currentPlan={currentPlan}
                   membershipStatus={membershipStatus}
                   onManageClick={handleManageSubscription}
