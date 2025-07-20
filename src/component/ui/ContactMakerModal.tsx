@@ -101,20 +101,17 @@ export default function ContactMakerModal({ open, onClose }: { open: boolean; on
                 key={type}
                 fullWidth
                 sx={{
-                  bgcolor: type === "카카오톡으로 빠른 문의" ? "#FFC386" : "#fff",
-                  color: type === "카카오톡으로 빠른 문의" ? "#000" : "#222",
+                  bgcolor: type === "카카오톡으로 빠른 문의" ? "#FFF8E1" : "#fff",
+                  color: type === "카카오톡으로 빠른 문의" ? "#F57C00" : "#222",
                   fontWeight: 700,
-                  fontSize: type === "카카오톡으로 빠른 문의" ? 20 : 18,
+                  fontSize: 18,
                   mb: 2,
-                  py: type === "카카오톡으로 빠른 문의" ? 2 : 1.5,
                   borderRadius: 2,
-                  boxShadow: type === "카카오톡으로 빠른 문의" ? "0 2px 8px rgba(0,0,0,0.1)" : 0,
-                  border: type === "카카오톡으로 빠른 문의" ? "2px solid #FFA726" : "none",
+                  boxShadow: 0,
+                  border: type === "카카오톡으로 빠른 문의" ? "1px solid #FFE0B2" : "none",
                   '&:hover': { 
-                    bgcolor: type === "카카오톡으로 빠른 문의" ? "#FFB366" : "#f0e6d6",
-                    transform: type === "카카오톡으로 빠른 문의" ? "scale(1.02)" : "none",
+                    bgcolor: type === "카카오톡으로 빠른 문의" ? "#FFE0B2" : "#f0e6d6" 
                   },
-                  transition: "all 0.2s ease",
                 }}
                 onClick={() => handleTypeSelect(type)}
               >
