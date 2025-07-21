@@ -427,15 +427,15 @@ export function parseEditableSummaryForDisplay(
   return elements;
 }
 
-// Utility function to convert File to base64
+// Utility function to convert File to base64 with data URL prefix
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        const base64 = reader.result.split(',')[1];
-        resolve(base64);
+        // Return the full data URL including the MIME type prefix
+        resolve(reader.result);
       } else {
         reject(new Error('Failed to convert file to base64'));
       }

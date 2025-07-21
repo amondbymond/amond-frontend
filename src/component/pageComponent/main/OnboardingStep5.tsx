@@ -70,11 +70,28 @@ export default function OnboardingStep5({
           response.data.images.map(async (imageData: string, index: number) => {
             const response = await fetch(imageData);
             const blob = await response.blob();
+            
+            // Extract the actual image type from the data URL
+            let mimeType = 'image/jpeg'; // default
+            let extension = 'jpg'; // default
+            
+            if (imageData.startsWith('data:')) {
+              const mimeMatch = imageData.match(/data:([^;]+);/);
+              if (mimeMatch) {
+                mimeType = mimeMatch[1];
+                // Determine extension based on MIME type
+                if (mimeType === 'image/png') extension = 'png';
+                else if (mimeType === 'image/gif') extension = 'gif';
+                else if (mimeType === 'image/webp') extension = 'webp';
+                else if (mimeType === 'image/jpeg' || mimeType === 'image/jpg') extension = 'jpg';
+              }
+            }
+            
             const fileName = isAdditional 
-              ? `additional-scraped-image-${Date.now()}-${index}.jpg`
-              : `scraped-image-${index}.jpg`;
+              ? `additional-scraped-image-${Date.now()}-${index}.${extension}`
+              : `scraped-image-${index}.${extension}`;
             return new File([blob], fileName, {
-              type: 'image/jpeg',
+              type: mimeType,
             });
           })
         );
@@ -410,7 +427,7 @@ export default function OnboardingStep5({
               ref={fileInputRef}
               type="file"
               multiple
-              accept="image/*"
+              accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
               onChange={handleImageChange}
               style={{ display: "none" }}
             />
