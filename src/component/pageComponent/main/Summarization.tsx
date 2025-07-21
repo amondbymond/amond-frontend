@@ -434,7 +434,7 @@ const fileToBase64 = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        // Return the full data URL including the MIME type prefix
+        // Return the full data URL including the MIME type prefix (fixed)
         resolve(reader.result);
       } else {
         reject(new Error('Failed to convert file to base64'));
