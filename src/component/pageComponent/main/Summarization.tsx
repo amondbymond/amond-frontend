@@ -949,6 +949,7 @@ export default function Summarization({
         {/* First part of content before images */}
         <Box sx={{ p: 3 }}>
           <Typography
+            component="div"
             sx={{
               fontSize: '1.15rem',
               fontWeight: 500,
@@ -988,6 +989,7 @@ export default function Summarization({
             borderTop: "1px solid rgba(255,152,0,0.1)"
           }}>
             <Typography
+              component="div"
               sx={{
                 fontSize: '1.15rem',
                 fontWeight: 500,
@@ -1111,6 +1113,7 @@ export default function Summarization({
         {!summaryParts.afterImage && summary && (
           <Box sx={{ p: 3, pt: 0 }}>
             <Typography
+              component="div"
               sx={{
                 fontSize: '1.15rem',
                 fontWeight: 500,
