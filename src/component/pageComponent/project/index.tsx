@@ -9,6 +9,9 @@ import {
   IconButton,
   useMediaQuery,
   CardMedia,
+  TextField,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState, useContext } from "react";
 import FullCalendar from "@fullcalendar/react";
@@ -173,6 +176,11 @@ export default function ProjectPage() {
     }
   }, [selectedContentRequestId, userInfo]);
 
+  // State for email notification
+  const [notificationEmail, setNotificationEmail] = useState("");
+  const [showEmailInput, setShowEmailInput] = useState(false);
+  const [emailNotificationRequested, setEmailNotificationRequested] = useState(false);
+
   // 이미지 생성중인 항목이 있는지 확인하고 자동 새로고침
   useEffect(() => {
     const hasGeneratingImage = contentData.contentDataList?.some(
@@ -218,6 +226,25 @@ export default function ProjectPage() {
       }
     };
   }, [contentData.contentDataList, selectedContentRequestId, userInfo]);
+
+  const handleEmailNotification = async () => {
+    if (!notificationEmail || !selectedContentRequestId) return;
+    
+    try {
+      await apiCall({
+        url: "/content/notification/email",
+        method: "post",
+        body: {
+          email: notificationEmail,
+          contentRequestId: selectedContentRequestId,
+        },
+      });
+      setEmailNotificationRequested(true);
+      setShowEmailInput(false);
+    } catch (e) {
+      handleAPIError(e, "이메일 알림 설정 실패");
+    }
+  };
 
   const makingContent = async (inputProjectData?: any) => {
     if (isMakingLoading) return;
@@ -588,6 +615,127 @@ export default function ProjectPage() {
                   </Box>
                 </Box>
               </Box>
+
+              {/* Image Generation Notification Box */}
+              {contentData.contentDataList?.some((content: any) => !content.imageUrl) && (
+                <Box
+                  sx={{
+                    mb: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    background: "linear-gradient(135deg, #f5f7ff 0%, #e8ecff 100%)",
+                    border: "1px solid #d4d9ff",
+                    position: "relative",
+                  }}
+                >
+                  <Box display="flex" alignItems="flex-start" gap={2}>
+                    <Box flex={1}>
+                      <Typography
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: { xs: 14, md: 16 },
+                          color: "#5865F2",
+                          mb: 1,
+                        }}
+                      >
+                        [이미지 생성 중]
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: { xs: 13, md: 14 },
+                          color: "#666",
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        이미지가 생성되는 동안 탭을 닫으셔도 됩니다. 
+                        이미지 생성은 약 2-5분 정도 소요됩니다.
+                      </Typography>
+                      
+                      {/* Progress indicator */}
+                      <Box display="flex" alignItems="center" gap={1} mt={1.5}>
+                        <CircularProgress size={16} thickness={4} sx={{ color: "#5865F2" }} />
+                        <Typography fontSize={13} color="#666">
+                          {contentData.contentDataList?.filter((c: any) => c.imageUrl).length || 0} / {contentData.contentDataList?.length || 0} 완료
+                        </Typography>
+                      </Box>
+                    </Box>
+                    
+                    {/* Email notification section */}
+                    <Box>
+                      {!showEmailInput && !emailNotificationRequested ? (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => setShowEmailInput(true)}
+                          sx={{
+                            borderColor: "#5865F2",
+                            color: "#5865F2",
+                            fontSize: { xs: 12, md: 13 },
+                            "&:hover": {
+                              borderColor: "#4752C4",
+                              background: "#f5f7ff",
+                            },
+                          }}
+                        >
+                          이메일 알림 받기
+                        </Button>
+                      ) : showEmailInput ? (
+                        <Box display="flex" gap={1} alignItems="center">
+                          <TextField
+                            size="small"
+                            placeholder="이메일 주소"
+                            value={notificationEmail}
+                            onChange={(e) => setNotificationEmail(e.target.value)}
+                            sx={{
+                              width: 200,
+                              "& .MuiOutlinedInput-root": {
+                                fontSize: { xs: 13, md: 14 },
+                              },
+                            }}
+                          />
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleEmailNotification}
+                            disabled={!notificationEmail}
+                            sx={{
+                              bgcolor: "#5865F2",
+                              fontSize: { xs: 12, md: 13 },
+                              "&:hover": {
+                                bgcolor: "#4752C4",
+                              },
+                            }}
+                          >
+                            확인
+                          </Button>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setShowEmailInput(false);
+                              setNotificationEmail("");
+                            }}
+                            sx={{ color: "#666" }}
+                          >
+                            ✕
+                          </IconButton>
+                        </Box>
+                      ) : (
+                        <Typography
+                          sx={{
+                            fontSize: { xs: 12, md: 13 },
+                            color: "#5865F2",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
+                        >
+                          ✓ 알림 설정 완료
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                </Box>
+              )}
 
               {viewType === "calendar" ? (
                 <FullCalendar
