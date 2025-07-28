@@ -27,6 +27,7 @@ export const apiCall = async ({
       data: body,
       params,
       headers,
+      withCredentials: true, // Explicitly set for each request
     });
     return response;
   } catch (error) {
