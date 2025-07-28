@@ -42,6 +42,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   
   const [isLoading, setIsLoading] = useState(false);
   const [needLoginonfirmModal, setNeedLoginonfirmModal] = useState(false);
+  const [showIncognitoWarning, setShowIncognitoWarning] = useState(false);
 
   const clickNext = () => {
     if (currentStep === 1) {
@@ -150,6 +151,20 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     } catch (e: any) {
       // Don't redirect on authentication errors - show modal instead
       if (e?.response?.data?.message?.includes("로그인")) {
+        // Check if cookies are blocked (incognito mode)
+        try {
+          document.cookie = "test=1; SameSite=None; Secure";
+          const cookieEnabled = document.cookie.includes("test=1");
+          document.cookie = "test=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          
+          if (!cookieEnabled) {
+            setShowIncognitoWarning(true);
+            return;
+          }
+        } catch (cookieError) {
+          console.error('Cookie test failed:', cookieError);
+        }
+        
         setNeedLoginonfirmModal(true);
       } else {
         handleAPIError(e, "콘텐츠 생성 실패");
@@ -322,6 +337,25 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           buttonLabel="확인"
           disableCloseIcon={true}
           disableOutClick
+        />
+      )}
+
+      {showIncognitoWarning && (
+        <ConfirmModal
+          modalSwitch={showIncognitoWarning}
+          setModalSwitch={setShowIncognitoWarning}
+          title="브라우저 설정 확인"
+          func={() => {
+            setShowIncognitoWarning(false);
+            // Open in a new regular window
+            window.open(window.location.href, '_blank');
+          }}
+          contents={
+            "시크릿 모드에서는 쿠키가 차단되어 로그인이 유지되지 않습니다.\n일반 브라우저 창에서 이용해주세요."
+          }
+          buttonLabel="새 창에서 열기"
+          disableCloseIcon={false}
+          disableOutClick={false}
         />
       )}
     </Box>
