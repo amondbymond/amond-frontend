@@ -95,10 +95,17 @@ export default function ProjectPage() {
       content: content,
     })) || [];
 
-  // Authentication check - only show message when accessed directly via URL
+  // Authentication check - only redirect if truly not logged in
   useEffect(() => {
+    // Only redirect after login check is complete and confirmed no user
     if (isLoginCheck && !userInfo) {
-      router.push("/login");
+      // Add a small delay to ensure session is established in incognito mode
+      const timer = setTimeout(() => {
+        if (!userInfo) {
+          router.push("/login");
+        }
+      }, 1000);
+      return () => clearTimeout(timer);
     }
   }, [userInfo, isLoginCheck, router]);
 
@@ -114,12 +121,21 @@ export default function ProjectPage() {
           },
         });
         setProjectData(response.data.projectData);
-        // Don't automatically generate content when switching sessions
-        // Users should manually click to generate content
-      } catch (e) {
+        // Only automatically generate content for first-time users (when needContentRequest is true)
+        // Don't auto-generate when switching between existing sessions
+        if (response.data.needContentRequest && !selectedContentRequestId) {
+          await makingContent(response.data.projectData);
+        }
+      } catch (e: any) {
+        // Don't immediately redirect on auth errors - wait for login context to update
+        if (e?.response?.data?.message?.includes("로그인")) {
+          console.log("Waiting for authentication...");
+          return;
+        }
+        
         handleAPIError(e, "프로젝트 데이터 조회 실패");
         if (axios.isAxiosError(e)) {
-          if (e.response?.status === 400) {
+          if (e.response?.status === 400 && !e.response?.data?.message?.includes("로그인")) {
             router.push("/");
           }
         }

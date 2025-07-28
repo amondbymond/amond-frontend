@@ -29,7 +29,7 @@ export const LoginProvider = ({ children }: { children: ReactNode }) => {
     loginCheck();
   }, []);
 
-  const loginCheck = async () => {
+  const loginCheck = async (retryCount = 0) => {
     try {
       const response = await apiCall({
         url: "/auth/loginCheck",
@@ -41,7 +41,16 @@ export const LoginProvider = ({ children }: { children: ReactNode }) => {
         setUserInfo(null);
       }
     } catch (e) {
-      // User not logged in
+      // In incognito mode, session might take time to establish
+      // Retry once after a delay
+      if (retryCount === 0) {
+        setTimeout(() => {
+          loginCheck(1);
+        }, 1000);
+        return;
+      }
+      // User not logged in after retry
+      setUserInfo(null);
     } finally {
       setIsLoginCheck(true);
     }
