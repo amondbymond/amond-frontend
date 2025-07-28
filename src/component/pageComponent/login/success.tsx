@@ -27,6 +27,9 @@ export default function LoginSuccessPage() {
 
           if (response.data.message === "프로젝트 연결 성공") {
             localStorage.removeItem("amondProjectId");
+            // Redirect to the project page after successful connection
+            router.push(`/project/${projectId}`);
+            return;
           }
         } catch (e) {
           // Error handling for password change

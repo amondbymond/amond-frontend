@@ -96,6 +96,9 @@ export default function LoginPage() {
             });
             if (response.data.message === "프로젝트 연결 성공") {
               localStorage.removeItem("amondProjectId");
+              // Redirect directly to the project page
+              router.push(`/project/${projectId}`);
+              return;
             }
           } catch (e) {
             handleAPIError(e, "프로젝트 연결 실패");

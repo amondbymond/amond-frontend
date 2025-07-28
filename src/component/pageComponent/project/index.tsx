@@ -114,9 +114,8 @@ export default function ProjectPage() {
           },
         });
         setProjectData(response.data.projectData);
-        if (response.data.needContentRequest) {
-          await makingContent(response.data.projectData);
-        }
+        // Don't automatically generate content when switching sessions
+        // Users should manually click to generate content
       } catch (e) {
         handleAPIError(e, "프로젝트 데이터 조회 실패");
         if (axios.isAxiosError(e)) {
