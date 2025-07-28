@@ -1,7 +1,12 @@
 import ProjectPage from "@/component/pageComponent/project";
+import ProjectLayout from "@/component/ui/ProjectLayout";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 export default function Project() {
+  const router = useRouter();
+  const { projectId } = router.query;
+
   return (
     <>
       <Head>
@@ -14,7 +19,9 @@ export default function Project() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <ProjectPage />
+        <ProjectLayout currentProjectId={projectId as string}>
+          <ProjectPage />
+        </ProjectLayout>
       </main>
     </>
   );

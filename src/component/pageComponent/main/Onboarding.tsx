@@ -125,17 +125,22 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       // presignedUrlList 내에 있는 url로 s3에 이미지 업로드
       await Promise.all(
         presignedUrlList.map(async (url: string, index: number) => {
-          await fetch(url, {
-            method: "put",
+          const response = await fetch(url, {
+            method: "PUT",
             body: selectedImageFiles[index],
             headers: {
-              "Content-Type": selectedImageFiles[index].type,
+              "Content-Type": selectedImageFiles[index].type || "application/octet-stream",
             },
           });
+          
+          if (!response.ok) {
+            console.error(`Failed to upload image ${index}:`, response.status, response.statusText);
+            throw new Error(`Failed to upload image ${index}`);
+          }
         })
       );
 
-      if (userId) {
+      if (userInfo) {
         router.push(`/project/${projectId}`);
       } else {
         // 로컬 스토리지에 projectId 저장

@@ -306,17 +306,27 @@ export default function ProjectPage() {
   // Show loading while checking authentication or if not logged in
   if (!isLoginCheck || !userInfo) {
     return (
-      <BodyContainer
-        sx={{ pt: { xs: "50px", md: "60px" }, pb: { xs: "40px", md: "40px" } }}
+      <Box
+        sx={{ 
+          display: "flex", 
+          justifyContent: "center", 
+          alignItems: "center", 
+          minHeight: "100vh",
+          backgroundColor: "#fff"
+        }}
       >
         <CenterProgress />
-      </BodyContainer>
+      </Box>
     );
   }
 
   return (
-    <BodyContainer
-      sx={{ pt: { xs: "50px", md: "60px" }, pb: { xs: "40px", md: "40px" } }}
+    <Box
+      sx={{ 
+        backgroundColor: "#fff",
+        minHeight: "100vh",
+        p: { xs: 2, md: 4 }
+      }}
     >
       {projectData ? (
         <Box
@@ -860,7 +870,7 @@ export default function ProjectPage() {
           projectId={projectId as string}
         />
       )}
-    </BodyContainer>
+    </Box>
   );
 }
 

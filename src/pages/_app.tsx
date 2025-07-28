@@ -13,6 +13,7 @@ import NavBar from "@/component/navBar";
 import Footer from "@/component/footer";
 import { UseMainHook } from "@/module/customHook/useHook";
 import FloatingKakaoButton from "@/component/ui/FloatingKakaoButton";
+import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -32,16 +33,20 @@ function AppInner({
   pageProps: any;
 }) {
   UseMainHook();
+  const router = useRouter();
+  
+  // Check if we're on a project page
+  const isProjectPage = router.pathname.startsWith('/project/[projectId]');
 
   return (
     // 배경 설정
-    <Container maxWidth={false}>
-      <NavBar />
+    <Container maxWidth={false} sx={{ p: isProjectPage ? 0 : undefined }}>
+      {!isProjectPage && <NavBar />}
       <main>
         <Component {...pageProps} />
       </main>
-      <Footer />
-      <FloatingKakaoButton />
+      {!isProjectPage && <Footer />}
+      {!isProjectPage && <FloatingKakaoButton />}
     </Container>
   );
 }
