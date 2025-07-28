@@ -147,8 +147,13 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         localStorage.setItem("amondProjectId", projectId);
         setNeedLoginonfirmModal(true);
       }
-    } catch (e) {
-      handleAPIError(e, "콘텐츠 생성 실패");
+    } catch (e: any) {
+      // Don't redirect on authentication errors - show modal instead
+      if (e?.response?.data?.message?.includes("로그인")) {
+        setNeedLoginonfirmModal(true);
+      } else {
+        handleAPIError(e, "콘텐츠 생성 실패");
+      }
     } finally {
       setIsLoading(false);
     }
