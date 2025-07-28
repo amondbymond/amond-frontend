@@ -26,6 +26,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const router = useRouter();
   const { userInfo } = useContext(LoginContext);
+  
+  console.log("[Onboarding] Starting with userInfo:", userInfo);
   const progress = (currentStep / 6) * 100; // Updated to 6 steps (Step 7 is summary)
   const [brandInput, setBrandInput] = useState({
     name: "",
@@ -98,6 +100,16 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   const saveBrandInput = async () => {
     if (isLoading) return;
+    
+    console.log("[Onboarding] saveBrandInput called with userInfo:", userInfo);
+    
+    // Ensure user is logged in before creating project
+    if (!userInfo) {
+      console.error("[Onboarding] No userInfo when saving brand!");
+      setNeedLoginonfirmModal(true);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       
