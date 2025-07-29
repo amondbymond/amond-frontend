@@ -22,6 +22,7 @@ import { apiCall, handleAPIError } from "@/module/utils/api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { returnTo } = router.query;
 
   // 로그인 인풋 리스트
   const inputList = [
@@ -105,12 +106,17 @@ export default function LoginPage() {
           }
         }
 
-        // 그 외의 경우 다른 페이지로 이동
-        const prevRoute = sessionStorage.getItem("prevRoute");
-        if (prevRoute === "/login/register" || prevRoute === "/login") {
-          router.push("/");
+        // Check if we have a returnTo parameter
+        if (returnTo && typeof returnTo === 'string') {
+          router.push(returnTo);
         } else {
-          router.push(prevRoute || "/");
+          // 그 외의 경우 다른 페이지로 이동
+          const prevRoute = sessionStorage.getItem("prevRoute");
+          if (prevRoute === "/login/register" || prevRoute === "/login") {
+            router.push("/");
+          } else {
+            router.push(prevRoute || "/");
+          }
         }
       } catch (e) {
         if (axios.isAxiosError(e)) {
@@ -249,7 +255,7 @@ export default function LoginPage() {
             </Link>
           </RowStack>
 
-          <Link className="btnHover" href={`${url}/auth/login/kakao`}>
+          <Link className="btnHover" href={`${url}/auth/login/kakao${returnTo ? `?returnTo=${encodeURIComponent(returnTo as string)}` : ''}`}>
             <Button
               sx={{
                 width: 1,
@@ -275,7 +281,7 @@ export default function LoginPage() {
             </Button>
           </Link>
 
-          <Link className="btnHover" href={`${url}/auth/login/google`}>
+          <Link className="btnHover" href={`${url}/auth/login/google${returnTo ? `?returnTo=${encodeURIComponent(returnTo as string)}` : ''}`}>
             <Button
               sx={{
                 width: 1,

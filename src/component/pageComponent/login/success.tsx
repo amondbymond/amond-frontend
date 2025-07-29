@@ -37,11 +37,18 @@ export default function LoginSuccessPage() {
       }
 
       let prevRoute = sessionStorage.getItem("prevRoute");
-      if (prevRoute === "/login" || prevRoute === "/login/success") {
-        prevRoute = "/";
+      
+      // Check if we came from a project page
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnTo = urlParams.get('returnTo');
+      
+      if (returnTo && returnTo.startsWith('/project/')) {
+        router.push(returnTo);
+      } else if (prevRoute === "/login" || prevRoute === "/login/success") {
+        router.push("/");
+      } else {
+        router.push(prevRoute || "/");
       }
-
-      router.push(prevRoute || "/");
     };
 
     goToPreviousPage();

@@ -28,7 +28,7 @@ import { useRouter } from "next/router";
 import { apiCall, handleAPIError } from "@/module/utils/api";
 import axios from "axios";
 import { s3ImageUrl } from "@/constant/commonVariable";
-import { BaseModalBox, LoadingModalWithVideo } from "@/component/ui/Modal";
+import { BaseModalBox, LoadingModalWithVideo, ConfirmModal } from "@/component/ui/Modal";
 import { motion } from "framer-motion";
 import { changeDateDot } from "@/module/utils/commonFunction";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
@@ -85,6 +85,7 @@ export default function ProjectPage() {
   const [contentDetailModal, setContentDetailModal] = useState(false);
 
   const [contentRequestListModal, setContentRequestListModal] = useState(false);
+  const [showSafariWarning, setShowSafariWarning] = useState(false);
 
   // 예시 이벤트를 contentData에서 가져오도록 수정
   const calendarEvents =
@@ -95,19 +96,47 @@ export default function ProjectPage() {
       content: content,
     })) || [];
 
+  // Check for Safari incognito mode
+  useEffect(() => {
+    const checkSafariIncognito = () => {
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      if (isSafari) {
+        // Test if cookies are blocked
+        try {
+          document.cookie = "test=1; SameSite=None; Secure";
+          const cookieEnabled = document.cookie.includes("test=1");
+          document.cookie = "test=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          
+          if (!cookieEnabled) {
+            console.log("[ProjectPage] Safari incognito mode detected - cookies blocked");
+            setShowSafariWarning(true);
+            return true;
+          }
+        } catch (e) {
+          console.error("Cookie test failed:", e);
+        }
+      }
+      return false;
+    };
+    
+    checkSafariIncognito();
+  }, []);
+
   // Authentication check - only redirect if truly not logged in
   useEffect(() => {
     // Only redirect after login check is complete and confirmed no user
-    if (isLoginCheck && !userInfo) {
+    if (isLoginCheck && !userInfo && !showSafariWarning) {
       // Add a small delay to ensure session is established in incognito mode
       const timer = setTimeout(() => {
         if (!userInfo) {
-          router.push("/login");
+          // Store the current project URL to return after login
+          const currentUrl = `/project/${projectId}`;
+          router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
         }
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [userInfo, isLoginCheck, router]);
+  }, [userInfo, isLoginCheck, router, projectId, showSafariWarning]);
 
   // 프로젝트 데이터 조회
   useEffect(() => {
@@ -883,6 +912,25 @@ export default function ProjectPage() {
           setModalSwitch={setContentRequestListModal}
           setSelectedContentRequestId={setSelectedContentRequestId}
           projectId={projectId as string}
+        />
+      )}
+
+      {showSafariWarning && (
+        <ConfirmModal
+          modalSwitch={showSafariWarning}
+          setModalSwitch={setShowSafariWarning}
+          title="브라우저 설정 확인"
+          func={() => {
+            setShowSafariWarning(false);
+            // Open in a new regular window
+            window.open(window.location.href, '_blank');
+          }}
+          contents={
+            "Safari 시크릿 모드에서는 쿠키가 차단되어 로그인이 유지되지 않습니다.\n일반 브라우저 창에서 이용해주세요."
+          }
+          buttonLabel="새 창에서 열기"
+          disableCloseIcon={false}
+          disableOutClick={false}
         />
       )}
     </Box>
