@@ -59,6 +59,7 @@ export default function NavBar() {
         method: "post",
       });
       setUserInfo(null);
+      localStorage.removeItem("amondSessionToken"); // Clear session token
       setSidebarOpen(false);
       router.push("/login");
     } catch (e) {

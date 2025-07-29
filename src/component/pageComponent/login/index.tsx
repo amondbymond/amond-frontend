@@ -81,6 +81,12 @@ export default function LoginPage() {
           body,
         });
 
+        // Store session token for incognito mode support
+        if (res.data.sessionToken) {
+          localStorage.setItem("amondSessionToken", res.data.sessionToken);
+          console.log("Session token stored for incognito mode");
+        }
+        
         setUserInfo(res.data);
 
         // 로컬 스토리지에 projectId 로드

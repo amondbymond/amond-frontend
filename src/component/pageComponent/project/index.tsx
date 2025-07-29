@@ -144,6 +144,7 @@ export default function ProjectPage() {
         if (!authCheck.data.id) {
           console.log("Session invalid, clearing context and redirecting to login...");
           setUserInfo(null); // Clear stale context
+          localStorage.removeItem("amondSessionToken"); // Clear session token
           const currentUrl = `/project/${projectId}`;
           router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
           return;
@@ -151,6 +152,7 @@ export default function ProjectPage() {
       } catch (e) {
         console.log("Session check failed, clearing context and redirecting to login...");
         setUserInfo(null); // Clear stale context
+        localStorage.removeItem("amondSessionToken"); // Clear session token
         const currentUrl = `/project/${projectId}`;
         router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
         return;

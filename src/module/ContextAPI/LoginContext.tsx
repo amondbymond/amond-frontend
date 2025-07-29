@@ -40,8 +40,14 @@ export const LoginProvider = ({ children }: { children: ReactNode }) => {
       });
       if (response.data.id) {
         setUserInfo(response.data);
+        // Store session token if returned
+        if (response.data.sessionToken) {
+          localStorage.setItem("amondSessionToken", response.data.sessionToken);
+        }
       } else {
         setUserInfo(null);
+        // Clear session token if not logged in
+        localStorage.removeItem("amondSessionToken");
       }
     } catch (e) {
       // In incognito mode, session might take time to establish

@@ -27,8 +27,16 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
   const displayUsername = isGuest ? "@guest" : `@user_${userInfo.id}`;
 
   const handleLogout = async () => {
-    // You may want to call your logout API here
+    try {
+      await apiCall({
+        url: "/auth/logout",
+        method: "post",
+      });
+    } catch (e) {
+      console.error("Logout error:", e);
+    }
     setUserInfo(null);
+    localStorage.removeItem("amondSessionToken"); // Clear session token
     router.push("/login");
   };
 

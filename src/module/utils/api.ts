@@ -21,12 +21,21 @@ export const apiCall = async ({
   headers,
 }: apiCallType) => {
   try {
+    // Get session token from localStorage for incognito mode support
+    const sessionToken = localStorage.getItem("amondSessionToken");
+    
+    // Merge headers with session token if available
+    const mergedHeaders = {
+      ...headers,
+      ...(sessionToken ? { "x-session-token": sessionToken } : {})
+    };
+    
     const response = await axios.request({
       url,
       method,
       data: body,
       params,
-      headers,
+      headers: mergedHeaders,
       withCredentials: true, // Explicitly set for each request
     });
     return response;
