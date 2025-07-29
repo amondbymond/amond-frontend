@@ -30,6 +30,9 @@ export const LoginProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const loginCheck = async (retryCount = 0) => {
+    // Reset check state to force re-verification
+    setIsLoginCheck(false);
+    
     try {
       const response = await apiCall({
         url: "/auth/loginCheck",

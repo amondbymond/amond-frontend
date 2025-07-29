@@ -45,7 +45,7 @@ export default function ProjectPage() {
   const isUnderMd = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const { projectId } = router.query;
-  const { userInfo, isLoginCheck } = useContext(LoginContext);
+  const { userInfo, isLoginCheck, setUserInfo } = useContext(LoginContext);
 
   // 프로젝트 데이터 (브랜드/상품 정보)
   const [projectData, setProjectData] = useState<any>(null);
@@ -126,21 +126,36 @@ export default function ProjectPage() {
   useEffect(() => {
     // Only redirect after login check is complete and confirmed no user
     if (isLoginCheck && !userInfo && !showSafariWarning) {
-      // Add a small delay to ensure session is established in incognito mode
-      const timer = setTimeout(() => {
-        if (!userInfo) {
-          // Store the current project URL to return after login
-          const currentUrl = `/project/${projectId}`;
-          router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
-        }
-      }, 1000);
-      return () => clearTimeout(timer);
+      // Store the current project URL to return after login
+      const currentUrl = `/project/${projectId}`;
+      router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
     }
   }, [userInfo, isLoginCheck, router, projectId, showSafariWarning]);
 
   // 프로젝트 데이터 조회
   useEffect(() => {
     const getData = async () => {
+      // First verify session is still valid
+      try {
+        const authCheck = await apiCall({
+          url: "/auth/loginCheck",
+          method: "get",
+        });
+        if (!authCheck.data.id) {
+          console.log("Session invalid, clearing context and redirecting to login...");
+          setUserInfo(null); // Clear stale context
+          const currentUrl = `/project/${projectId}`;
+          router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
+          return;
+        }
+      } catch (e) {
+        console.log("Session check failed, clearing context and redirecting to login...");
+        setUserInfo(null); // Clear stale context
+        const currentUrl = `/project/${projectId}`;
+        router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
+        return;
+      }
+
       try {
         const response = await apiCall({
           url: "/content/project/detail",
@@ -156,15 +171,18 @@ export default function ProjectPage() {
           await makingContent(response.data.projectData);
         }
       } catch (e: any) {
-        // Don't immediately redirect on auth errors - wait for login context to update
+        // Handle authentication errors
         if (e?.response?.data?.message?.includes("로그인")) {
-          console.log("Waiting for authentication...");
+          console.log("Authentication required, clearing context and redirecting to login...");
+          setUserInfo(null); // Clear stale context
+          const currentUrl = `/project/${projectId}`;
+          router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
           return;
         }
         
         handleAPIError(e, "프로젝트 데이터 조회 실패");
         if (axios.isAxiosError(e)) {
-          if (e.response?.status === 400 && !e.response?.data?.message?.includes("로그인")) {
+          if (e.response?.status === 400) {
             router.push("/");
           }
         }
