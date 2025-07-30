@@ -81,7 +81,7 @@ export default function MainPage() {
             "콘텐츠 생성을 위해서는 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?"
           }
           buttonLabel="로그인하기"
-          disableCloseIcon={false}
+          disableCloseIcon={true}
           disableOutClick={false}
         />
       )}
