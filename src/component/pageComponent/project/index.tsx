@@ -22,7 +22,7 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Grid,
+  Grid as MuiGrid,
   Switch,
   Divider,
   Chip,
@@ -1039,8 +1039,8 @@ export default function ProjectPage() {
                 이미지 {selectedImageIndex + 1} 설정
               </Typography>
               
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+              <MuiGrid container spacing={2}>
+                <MuiGrid item xs={12} sm={6}>
                   {/* Content Type Selection */}
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                     <InputLabel sx={{ fontSize: 12 }}>콘텐츠 타입</InputLabel>
@@ -1061,9 +1061,9 @@ export default function ProjectPage() {
                       ))}
                     </Select>
                   </FormControl>
-                </Grid>
+                </MuiGrid>
                 
-                <Grid item xs={12} sm={6}>
+                <MuiGrid item xs={12} sm={6}>
                   {/* Image Size Selection */}
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                     <InputLabel sx={{ fontSize: 12 }}>이미지 사이즈</InputLabel>
@@ -1082,8 +1082,8 @@ export default function ProjectPage() {
                       <MenuItem value="3:2" sx={{ fontSize: 12 }}>3:2 (가로형)</MenuItem>
                     </Select>
                   </FormControl>
-                </Grid>
-              </Grid>
+                </MuiGrid>
+              </MuiGrid>
               
               {/* SNS Event Toggle */}
               <FormControlLabel
