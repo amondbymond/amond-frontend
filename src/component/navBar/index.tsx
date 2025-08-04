@@ -37,7 +37,7 @@ export default function NavBar() {
   const [passwordModal, setPasswordModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const navBarHeight = { xs: "44px", md: "59px" };
+  const navBarHeight = { xs: "33px", md: "44px" }; // Scaled down 75%
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,19 +69,8 @@ export default function NavBar() {
 
   // 프로젝트 페이지로 이동
   const goToProjectPage = async () => {
-    try {
-      const response = await apiCall({
-        url: "/content/project",
-        method: "get",
-      });
-      if (response.data.projectId) {
-        router.push(`/project/${response.data.projectId}`);
-      } else {
-        alert("프로젝트가 없습니다.");
-      }
-    } catch (e) {
-      alert("프로젝트 이동 실패");
-    }
+    // Navigate to project page which will handle empty state or redirect to first project
+    router.push("/project");
   };
 
   return (
@@ -96,14 +85,18 @@ export default function NavBar() {
               zIndex: 1200,
               boxShadow: "0px 1px 2px 0px rgba(154, 255, 1, 0.12)",
               borderBottom: "0.5px solid #E1E1E1",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: navBarHeight,
             }}
           >
-            <BodyContainer sx={{ py: { xs: "10px", md: "10px" } }}>
+            <BodyContainer sx={{ height: "100%", display: "flex", alignItems: "center" }}>
               <RowStack
                 justifyContent="space-between"
-                sx={{ position: "relative" }}
+                sx={{ position: "relative", width: "100%" }}
               >
-                <Box sx={{ width: { xs: "90px", md: "250px" } }} />
+                <Box sx={{ width: { xs: "68px", md: "188px" } }} />
 
                 {/* 로고 */}
                 <Box sx={{ 
@@ -124,16 +117,16 @@ export default function NavBar() {
                       image="/logoHorizontalWhite.png"
                       alt="company logo"
                       sx={{
-                        width: { xs: "97.7px", md: "130px" },
-                        height: { xs: "24px", md: "32px" },
+                        width: { xs: "73px", md: "98px" },
+                        height: { xs: "18px", md: "24px" },
                         cursor: "pointer",
                       }}
                     />
                   </Link>
                 </Box>
 
-                <Box sx={{ width: { xs: "90px", md: "350px" } }}>
-                  <RowStack spacing="12px" justifyContent="flex-end">
+                <Box sx={{ width: { xs: "68px", md: "263px" } }}>
+                  <RowStack spacing="9px" justifyContent="flex-end">
                     {isMobile ? (
                       <>
                         <IconButton
@@ -148,7 +141,7 @@ export default function NavBar() {
                           <AccountCircleIcon
                             sx={{
                               color: "white",
-                              fontSize: "24px",
+                              fontSize: "18px",
                             }}
                           />
                         </IconButton>
@@ -176,25 +169,12 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
-                                내 캘린더
-                              </MenuItem>
-                              <MenuItem
-                                onClick={() => {
-                                  goToProjectPage();
-                                  handleClose();
-                                }}
-                                sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
-                                }}
-                              >
-                                새 콘텐츠
+                                내 컨텐츠 보기
                               </MenuItem>
                               <MenuItem
                                 onClick={() => {
@@ -202,9 +182,9 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
                                 구독 결제하기
@@ -215,9 +195,9 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
                                 이용약관
@@ -228,9 +208,9 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
                                 개인정보처리방침
@@ -241,9 +221,9 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
                                 비밀번호 변경
@@ -254,9 +234,9 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
                                 로그아웃
@@ -270,9 +250,9 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
                                 로그인
@@ -283,9 +263,9 @@ export default function NavBar() {
                                   handleClose();
                                 }}
                                 sx={{
-                                  p: "0px 12px",
-                                  fontSize: "14px",
-                                  minHeight: "40px",
+                                  p: "0px 9px",
+                                  fontSize: "10.5px",
+                                  minHeight: "30px",
                                 }}
                               >
                                 회원가입
@@ -296,22 +276,22 @@ export default function NavBar() {
                       </>
                     ) : (
                       <>
-                        {/* Always show Person Icon for Sidebar Toggle */}
                         <IconButton
+                          size="large"
+                          aria-label="account of current user"
+                          aria-controls="menu-appbar"
+                          aria-haspopup="true"
                           onClick={toggleSidebar}
-                          sx={{
-                                color: "white",
-                                border: "2px solid white",
-                                ml: 1,
-                                width: "40px",
-                                height: "40px",
-                                '&:hover': {
-                                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                                },
-                              }}
-                            >
-                              <PersonIcon sx={{ fontSize: "20px" }} />
-                            </IconButton>
+                          color="inherit"
+                          sx={{ p: 0 }}
+                        >
+                          <PersonIcon
+                            sx={{
+                              color: "white",
+                              fontSize: "18px",
+                            }}
+                          />
+                        </IconButton>
                       </>
                     )}
                   </RowStack>
@@ -423,7 +403,7 @@ function PasswordModal({
     <BaseModalBox
       modalSwitch={modalSwitch}
       setModalSwitch={setModalSwitch}
-      sx={{ width: { xs: "320px", md: "400px" } }}
+      sx={{ width: { xs: "240px", md: "300px" } }}
     >
       <Box sx={{ p: "20px" }}>
         <Typography align="center" fontSize={20} fontWeight={600}>
@@ -433,8 +413,8 @@ function PasswordModal({
         <form onSubmit={handleSubmit(onSubmit)}>
           {passWordList.map(function (each) {
             return (
-              <Box key={each.keyName} sx={{ mt: "20px" }}>
-                <Typography fontSize={14} sx={{ mb: "4px" }}>
+              <Box key={each.keyName} sx={{ mt: "15px" }}>
+                <Typography fontSize={10.5} sx={{ mb: "3px" }}>
                   {each.label}
                 </Typography>
                 <Controller

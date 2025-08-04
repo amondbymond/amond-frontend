@@ -12,6 +12,8 @@ export type UserDataType = {
   id: number;
   authType: string;
   grade: string;
+  name?: string;
+  email?: string;
 };
 
 const LoginContext = createContext<LoginContextType>({
@@ -39,7 +41,17 @@ export const LoginProvider = ({ children }: { children: ReactNode }) => {
         method: "get",
       });
       if (response.data.id) {
-        setUserInfo(response.data);
+        // Fetch full user data
+        try {
+          const userResponse = await apiCall({
+            url: "/auth/user",
+            method: "get",
+          });
+          setUserInfo(userResponse.data);
+        } catch (userError) {
+          // Fallback to basic data if user endpoint fails
+          setUserInfo(response.data);
+        }
         // Store session token if returned
         if (response.data.sessionToken) {
           localStorage.setItem("amondSessionToken", response.data.sessionToken);

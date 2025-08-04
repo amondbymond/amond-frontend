@@ -149,11 +149,11 @@ export default function ContentsInputSection({
   return (
     <Box
       sx={{
-        p: { xs: 2, md: 2.5 },
-        borderRadius: 2,
+        p: { xs: 1.5, md: 2 },
+        borderRadius: 1.5,
         border: "1px solid",
         borderColor: "grey.200",
-        mb: { xs: 2, md: 3 },
+        mb: { xs: 1.5, md: 2.25 },
       }}
     >
       <RowStack
@@ -162,14 +162,14 @@ export default function ContentsInputSection({
         mb={2}
         sx={{ cursor: "pointer" }}
       >
-        <Typography fontWeight={600} fontSize={{ xs: 16, md: 18 }}>
+        <Typography fontWeight={600} fontSize={{ xs: 12, md: 13.5 }}>
           콘텐츠 스타일 설정
         </Typography>
 
         <ExpandMoreIcon
           sx={{
             color: "rgba(0, 0, 0, 0.54)",
-            fontSize: 24,
+            fontSize: 18,
             // 회전 애니메이션
             transition: "transform 0.15s ease-in-out",
             transform: accordionOpen ? "rotate(180deg)" : "rotate(0deg)",
@@ -184,7 +184,7 @@ export default function ContentsInputSection({
               alignItems="center"
               justifyContent="space-between"
             >
-              <Typography fontWeight={600}>{label}</Typography>
+              <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>{label}</Typography>
               <Switch
                 checked={content[toggleKey as keyof typeof content] as boolean}
                 onChange={(e) =>
@@ -196,7 +196,7 @@ export default function ContentsInputSection({
             {isReversed && (
               <Typography
                 color={primaryColor}
-                fontSize={{ xs: 13, md: 14 }}
+                fontSize={{ xs: 10, md: 10.5 }}
                 sx={{ mt: -0.3, mb: 0.5, opacity: 0.7 }}
               >
                 {helper}
@@ -270,7 +270,7 @@ export default function ContentsInputSection({
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <Typography fontWeight={600}>{label}</Typography>
+                  <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>{label}</Typography>
                   <Switch
                     checked={
                       content[toggleKey as keyof typeof content] as boolean
@@ -283,7 +283,7 @@ export default function ContentsInputSection({
                 {isReversed && (
                   <Typography
                     color={primaryColor}
-                    fontSize={{ xs: 13, md: 14 }}
+                    fontSize={{ xs: 10, md: 10.5 }}
                     sx={{ mt: -0.3, mb: 0.5, opacity: 0.7 }}
                   >
                     {helper}
@@ -294,7 +294,7 @@ export default function ContentsInputSection({
           )}
 
           <Box mb={2} mt={1.5}>
-            <Typography fontWeight={600} mb={1}>
+            <Typography fontWeight={600} mb={1} fontSize={{ xs: 10.5, md: 12 }}>
               업로드 주기
             </Typography>
             <Grid container spacing={1}>
@@ -308,7 +308,7 @@ export default function ContentsInputSection({
                     onClick={() => handleUploadChange(u)}
                     disabled={u !== "주 1회"}
                     sx={{ 
-                      height: 40,
+                      height: 30,
                       opacity: u !== "주 1회" ? 0.5 : 1,
                       cursor: u !== "주 1회" ? "not-allowed" : "pointer"
                     }}
@@ -321,12 +321,12 @@ export default function ContentsInputSection({
           </Box>
 
           <Box mb={2}>
-            <Typography fontWeight={600}>톤앤매너</Typography>
+            <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>톤앤매너</Typography>
 
             {isReversed && (
               <Typography
                 color={primaryColor}
-                fontSize={{ xs: 13, md: 14 }}
+                fontSize={{ xs: 10, md: 10.5 }}
                 sx={{ mt: 0.5, mb: 1, opacity: 0.7 }}
               >
                 어떤 톤으로 고객들과 소통하시길 원하시나요? 최대 3가지를
@@ -351,7 +351,7 @@ export default function ContentsInputSection({
                     sx={{
                       width: "100%",
                       fontWeight: 500,
-                      fontSize: 14,
+                      fontSize: 10.5,
                       borderColor: content.toneMannerList.includes(t)
                         ? "primary.main"
                         : "grey.300",
@@ -369,12 +369,12 @@ export default function ContentsInputSection({
 
 
           <Box mb={2}>
-            <Typography fontWeight={600}>이미지 비율</Typography>
+            <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>이미지 비율</Typography>
 
             {isReversed && (
               <Typography
                 color={primaryColor}
-                fontSize={{ xs: 13, md: 14 }}
+                fontSize={{ xs: 10, md: 10.5 }}
                 sx={{ mt: 0.5, mb: 1, opacity: 0.7 }}
               >
                 원하는 대표 인스타 콘텐츠 사이즈를 알려주세요!
@@ -394,43 +394,6 @@ export default function ContentsInputSection({
                   >
                     {r}
                   </Button>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-
-          <Box mb={2}>
-            <Typography fontWeight={600} mb={1}>
-              콘텐츠 방향성
-            </Typography>
-            <Grid container spacing={1}>
-              {directionList.map((d) => (
-                <Grid size={{ xs: 4 }} key={d}>
-                  <Chip
-                    label={d}
-                    clickable
-                    variant="outlined"
-                    onClick={() =>
-                      handleDirectionChange(
-                        content.directionList.includes(d)
-                          ? content.directionList.filter((x) => x !== d)
-                          : [...content.directionList, d]
-                      )
-                    }
-                    sx={{
-                      width: "100%",
-                      fontWeight: 500,
-                      fontSize: { xs: 12, md: 14 },
-                      borderColor: content.directionList.includes(d)
-                        ? "primary.main"
-                        : "grey.300",
-                      "&:hover": {
-                        borderColor: "primary.main",
-                        backgroundColor: "grey.50",
-                      },
-                      letterSpacing: { xs: "-0.01em", md: "0" },
-                    }}
-                  />
                 </Grid>
               ))}
             </Grid>

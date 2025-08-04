@@ -4,6 +4,8 @@ import { primaryColor } from "@/constant/styles/styleTheme";
 import { apiCall, handleAPIError } from "@/module/utils/api";
 import EditableText from "@/component/ui/EditableText";
 import EditableColor from "@/component/ui/EditableColor";
+import EditableDropdown from "@/component/ui/EditableDropdown";
+import { CONTENT_TYPES } from "@/constant/commonVariable";
 
 interface SummarizationProps {
   brandInput: any;
@@ -11,7 +13,7 @@ interface SummarizationProps {
   scrapedImages: File[];
   hasUrl: boolean | null;
   selectedImages: Set<string>;
-  onGenerateContent: () => void;
+  onGenerateContent: (additionalData?: any) => void;
   onGenerateImages?: () => void;
   onBrandInputChange?: (updatedBrandInput: any) => void;
 }
@@ -187,7 +189,10 @@ export function parseEditableSummaryForDisplay(
     advantage?: string;
     productDescription?: string;
     targetDescription?: string;
-  }
+  },
+  brandInput?: any,
+  selectedContentTypes?: string[],
+  setSelectedContentTypes?: (types: string[]) => void
 ) {
   const elements: (string | JSX.Element)[] = [];
   let processedText = summary;
@@ -290,6 +295,23 @@ export function parseEditableSummaryForDisplay(
     };
     keyIndex++;
     return placeholder;
+  });
+
+  // Pattern for content types recommendation
+  const contentTypesRegex = /이런 고객들에게 어필하기 위해서는\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*([^형]+)\s*형식의 콘텐츠가 적절해 보입니다\./g;
+  processedText = processedText.replace(contentTypesRegex, (match, type1, type2, type3, type4) => {
+    const placeholder1 = `__CONTENT_TYPE_0__`;
+    const placeholder2 = `__CONTENT_TYPE_1__`;
+    const placeholder3 = `__CONTENT_TYPE_2__`;
+    const placeholder4 = `__CONTENT_TYPE_3__`;
+    
+    placeholders[placeholder1] = { type: 'content_type', content: { index: 0, value: type1.trim() } };
+    placeholders[placeholder2] = { type: 'content_type', content: { index: 1, value: type2.trim() } };
+    placeholders[placeholder3] = { type: 'content_type', content: { index: 2, value: type3.trim() } };
+    placeholders[placeholder4] = { type: 'content_type', content: { index: 3, value: type4.trim() } };
+    
+    keyIndex += 4;
+    return `이런 고객들에게 어필하기 위해서는 ${placeholder1}, ${placeholder2}, ${placeholder3}, ${placeholder4} 형식의 콘텐츠가 적절해 보입니다.`;
   });
 
   // Split by placeholders and process, including brackets
@@ -410,6 +432,29 @@ export function parseEditableSummaryForDisplay(
             />
           );
           break;
+          
+        case 'content_type':
+          if (brandInput && setSelectedContentTypes) {
+            const categoryOptions = CONTENT_TYPES[brandInput.category as keyof typeof CONTENT_TYPES] || CONTENT_TYPES['기타'];
+            elements.push(
+              <EditableDropdown
+                key={`content-type-${placeholder.content.index}`}
+                options={categoryOptions}
+                value={selectedContentTypes?.[placeholder.content.index] || placeholder.content.value}
+                onChange={(newValue) => {
+                  if (selectedContentTypes && setSelectedContentTypes) {
+                    const newTypes = [...selectedContentTypes];
+                    newTypes[placeholder.content.index] = newValue;
+                    setSelectedContentTypes(newTypes);
+                  }
+                }}
+              />
+            );
+          } else {
+            // If no handlers provided, just show as text
+            elements.push(placeholder.content.value);
+          }
+          break;
       }
     } else {
       // Regular text - split by newlines
@@ -464,6 +509,8 @@ export default function Summarization({
   const [editableProductDescription, setEditableProductDescription] = useState<string>("");
   const [editableTargetCustomer, setEditableTargetCustomer] = useState<string>("");
   const [editableTargetDescription, setEditableTargetDescription] = useState<string>("");
+  const [mainColor, setMainColor] = useState<{ name: string; hex: string }>({ name: '', hex: '' });
+  const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(['', '', '', '']);
   const hasInitialized = useRef(false);
 
   // Update editable brand name when brandInput changes
@@ -607,6 +654,26 @@ export default function Summarization({
         
         // Extract values from the summary text if not provided separately
         // This is a fallback for when the backend doesn't send structured data
+        
+        // Extract content types from summary
+        const contentTypesMatch = processedSummary.match(/이런 고객들에게 어필하기 위해서는\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*([^형]+)\s*형식의 콘텐츠가 적절해 보입니다\./);
+        if (contentTypesMatch) {
+          setSelectedContentTypes([
+            contentTypesMatch[1].trim(),
+            contentTypesMatch[2].trim(),
+            contentTypesMatch[3].trim(),
+            contentTypesMatch[4].trim()
+          ]);
+        }
+        
+        // Extract main color
+        const colorMatch = processedSummary.match(/피드의 메인테마는\s*([^,]+),\s*(#[0-9A-Fa-f]{6})/);
+        if (colorMatch) {
+          setMainColor({
+            name: colorMatch[1].trim(),
+            hex: colorMatch[2].trim()
+          });
+        }
         
         // Extract core product name and description
         const productMatch = processedSummary.match(/중심 상품은 \[([^\]]+)\] → \[([^\]]+)\]/);
@@ -976,7 +1043,10 @@ export default function Summarization({
                 advantage: editableAdvantage,
                 productDescription: editableProductDescription,
                 targetDescription: editableTargetDescription
-              }
+              },
+              brandInput,
+              selectedContentTypes,
+              setSelectedContentTypes
             )}
           </Typography>
         </Box>
@@ -1016,7 +1086,10 @@ export default function Summarization({
                   advantage: editableAdvantage,
                   productDescription: editableProductDescription,
                   targetDescription: editableTargetDescription
-                }
+                },
+                brandInput,
+                selectedContentTypes,
+                setSelectedContentTypes
               )}
             </Typography>
             
@@ -1140,7 +1213,10 @@ export default function Summarization({
                   advantage: editableAdvantage,
                   productDescription: editableProductDescription,
                   targetDescription: editableTargetDescription
-                }
+                },
+                brandInput,
+                selectedContentTypes,
+                setSelectedContentTypes
               )}
             </Typography>
           </Box>
@@ -1177,7 +1253,16 @@ export default function Summarization({
           variant="contained"
           color="warning"
           sx={{ fontWeight: 700, fontSize: "18px", py: 1.5, borderRadius: "12px" }}
-          onClick={onGenerateContent}
+          onClick={() => onGenerateContent({
+            advantages: editableAdvantage,
+            coreProduct: editableProductName,
+            coreProductDetail: editableProductDescription,
+            targetAudience: editableTargetCustomer,
+            targetAudienceDetail: editableTargetDescription,
+            mainColor: mainColor.hex,
+            selectedContentTypes: selectedContentTypes,
+            brandAnalysis: summary
+          })}
           disabled={isLoadingSummary || !!error}
         >
           이대로 콘텐츠 생성하기!

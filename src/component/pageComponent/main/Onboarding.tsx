@@ -6,7 +6,7 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { apiCall, handleAPIError } from "@/module/utils/api";
@@ -27,7 +27,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const router = useRouter();
   const { userInfo } = useContext(LoginContext);
   
-  console.log("[Onboarding] Starting with userInfo:", userInfo);
+  // console.log("[Onboarding] Starting with userInfo:", userInfo);
   const progress = (currentStep / 6) * 100; // Updated to 6 steps (Step 7 is summary)
   const [brandInput, setBrandInput] = useState({
     name: "",
@@ -45,6 +45,55 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [needLoginonfirmModal, setNeedLoginonfirmModal] = useState(false);
   const [showIncognitoWarning, setShowIncognitoWarning] = useState(false);
+  
+  // Check if we're creating a new feed set from an existing brand
+  const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    // Check if we're creating a new feed set from an existing brand
+    const brandId = localStorage.getItem('selectedBrandId');
+    const isNewFeedSet = router.query.newFeedSet === 'true';
+    const autoGenerate = router.query.autoGenerate === 'true';
+    
+    if (brandId && isNewFeedSet) {
+      // Pre-fill brand data from localStorage
+      const brandName = localStorage.getItem('selectedBrandName');
+      const brandCategory = localStorage.getItem('selectedBrandCategory');
+      const brandUrl = localStorage.getItem('selectedBrandUrl');
+      const brandDescription = localStorage.getItem('selectedBrandDescription');
+      const additionalInstructions = localStorage.getItem('additionalInstructions');
+      
+      setBrandInput({
+        name: brandName || '',
+        category: brandCategory || '',
+        url: brandUrl || '',
+        reasonList: [],
+        description: brandDescription || (additionalInstructions ? `${brandDescription}\n\n추가 요청사항: ${additionalInstructions}` : ''),
+      });
+      
+      setSelectedBrandId(brandId);
+      
+      // Clear the localStorage after using it
+      localStorage.removeItem('selectedBrandId');
+      localStorage.removeItem('selectedBrandName');
+      localStorage.removeItem('selectedBrandCategory');
+      localStorage.removeItem('selectedBrandUrl');
+      localStorage.removeItem('selectedBrandDescription');
+      localStorage.removeItem('additionalInstructions');
+      
+      // If auto-generate is true, skip to image generation
+      if (autoGenerate) {
+        // Set default values for automatic generation
+        setHasUrl(!!brandUrl);
+        // Start loading immediately
+        setIsLoading(true);
+        // Skip directly to save without showing any steps
+        setTimeout(() => {
+          saveBrandInput(true); // Pass flag for auto-generation
+        }, 100);
+      }
+    }
+  }, [router.query]);
 
   const clickNext = () => {
     if (currentStep === 1) {
@@ -98,10 +147,37 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     }
   };
 
-  const saveBrandInput = async () => {
+  // Handle Enter key press
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        // Don't proceed if a textarea is focused (to allow multiline input)
+        const activeElement = document.activeElement;
+        if (activeElement?.tagName === 'TEXTAREA') {
+          return;
+        }
+        
+        // Don't proceed if loading
+        if (isLoading) {
+          return;
+        }
+        
+        event.preventDefault();
+        clickNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [currentStep, brandInput, hasUrl, selectedImages, isLoading]);
+
+  const saveBrandInput = async (autoGenerate: boolean = false, additionalData?: any) => {
     if (isLoading) return;
     
     console.log("[Onboarding] saveBrandInput called with userInfo:", userInfo);
+    console.log("[Onboarding] Additional data:", additionalData);
     
     // Ensure user is logged in before creating project
     if (!userInfo) {
@@ -113,48 +189,110 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     try {
       setIsLoading(true);
       
-      // Get selected images in the correct order
-      const allImages = [...images, ...scrapedImages];
-      const selectedImageFiles = allImages.filter((_, index) => {
-        const imageKey = index < images.length ? `manual-${index}` : `scraped-${index - images.length}`;
-        return selectedImages.has(imageKey);
-      });
+      let selectedImageFiles: File[] = [];
+      
+      if (autoGenerate) {
+        // For auto-generation, we'll send empty image list and let backend generate
+        selectedImageFiles = [];
+        console.log("[Onboarding] Auto-generating 4 images for brand:", brandInput.name);
+      } else {
+        // Get selected images in the correct order
+        const allImages = [...images, ...scrapedImages];
+        selectedImageFiles = allImages.filter((_, index) => {
+          const imageKey = index < images.length ? `manual-${index}` : `scraped-${index - images.length}`;
+          return selectedImages.has(imageKey);
+        });
+      }
 
-      const response = await apiCall({
-        url: "/content/project",
-        method: "post",
-        body: {
-          name: brandInput.name,
-          category: brandInput.category,
-          url: brandInput.url,
-          reasonList: brandInput.reasonList,
-          description: brandInput.description,
-          imageNameList: selectedImageFiles.map((image) => image.name),
-          imageCount: selectedImageFiles.length,
-        },
-      });
+      let response;
+      
+      if (selectedBrandId) {
+        // Create a new feed set for existing brand
+        response = await apiCall({
+          url: `/brand/${selectedBrandId}/feedset`,
+          method: "post",
+          body: {
+            imageNameList: selectedImageFiles.map((image) => image.name),
+            reasonList: brandInput.reasonList,
+            autoGenerate: autoGenerate,
+            imageCount: autoGenerate ? 4 : selectedImageFiles.length,
+          },
+        });
+      } else {
+        // Create a new brand and project
+        response = await apiCall({
+          url: "/content/project",
+          method: "post",
+          body: {
+            name: brandInput.name,
+            category: brandInput.category,
+            url: brandInput.url,
+            reasonList: brandInput.reasonList,
+            description: brandInput.description,
+            imageNameList: selectedImageFiles.map((image) => image.name),
+            imageCount: autoGenerate ? 4 : selectedImageFiles.length,
+            autoGenerate: autoGenerate,
+            ...(additionalData || {}), // Include additional brand data
+          },
+        });
+      }
 
       const { projectId, presignedUrlList, userId } = response.data;
-      // presignedUrlList 내에 있는 url로 s3에 이미지 업로드
-      await Promise.all(
-        presignedUrlList.map(async (url: string, index: number) => {
-          const response = await fetch(url, {
-            method: "PUT",
-            body: selectedImageFiles[index],
-            headers: {
-              "Content-Type": selectedImageFiles[index].type || "application/octet-stream",
+      
+      // Only upload images if not auto-generating
+      if (!autoGenerate && selectedImageFiles.length > 0) {
+        // presignedUrlList 내에 있는 url로 s3에 이미지 업로드
+        await Promise.all(
+          presignedUrlList.map(async (url: string, index: number) => {
+            const response = await fetch(url, {
+              method: "PUT",
+              body: selectedImageFiles[index],
+              headers: {
+                "Content-Type": selectedImageFiles[index].type || "application/octet-stream",
+              },
+            });
+            
+            if (!response.ok) {
+              console.error(`Failed to upload image ${index}:`, response.status, response.statusText);
+              throw new Error(`Failed to upload image ${index}`);
+            }
+          })
+        );
+      }
+
+      if (autoGenerate) {
+        // For auto-generation, trigger content generation request
+        console.log("[Onboarding] Triggering content generation for project:", projectId);
+        
+        // Trigger content generation API
+        try {
+          await apiCall({
+            url: "/content/request",
+            method: "post",
+            body: {
+              projectId,
+              contentSettings: {
+                uploadCycle: ['1', '1', '1'], // Generate 1 set of 4 images
+              },
+              requestType: 'auto',
             },
           });
-          
-          if (!response.ok) {
-            console.error(`Failed to upload image ${index}:`, response.status, response.statusText);
-            throw new Error(`Failed to upload image ${index}`);
-          }
-        })
-      );
-
-      if (userInfo) {
-        router.push(`/project/${projectId}`);
+          console.log("[Onboarding] Content generation request sent successfully");
+        } catch (error) {
+          console.error("[Onboarding] Failed to trigger content generation:", error);
+        }
+        
+        // Dispatch brand-updated event immediately
+        window.dispatchEvent(new Event('brand-updated'));
+        
+        // Navigate to project page
+        await router.push(`/project/${projectId}`);
+      } else if (userInfo) {
+        // Dispatch brand-updated event immediately
+        window.dispatchEvent(new Event('brand-updated'));
+        
+        // Navigate to project page
+        await router.push(`/project/${projectId}`);
       } else {
         // 로컬 스토리지에 projectId 저장
         localStorage.setItem("amondProjectId", projectId);
@@ -185,6 +323,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       setIsLoading(false);
     }
   };
+
+  // If auto-generating, only show loading modal
+  if (router.query.autoGenerate === 'true' && isLoading) {
+    return (
+      <>
+        <LoadingModalWithVideo
+          modalSwitch={isLoading}
+          setModalSwitch={setIsLoading}
+        />
+      </>
+    );
+  }
 
   return (
     <Box
@@ -302,8 +452,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             scrapedImages={scrapedImages}
             hasUrl={hasUrl}
             selectedImages={selectedImages}
-            onGenerateContent={saveBrandInput}
+            onGenerateContent={(additionalData) => saveBrandInput(false, additionalData)}
             onBrandInputChange={setBrandInput}
+            autoGenerate={router.query.autoGenerate === 'true'}
           />
         )}
       </Box>

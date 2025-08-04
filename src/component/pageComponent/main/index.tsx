@@ -14,7 +14,7 @@ export default function MainPage() {
   const { userInfo, isLoginCheck } = useContext(LoginContext);
   const [showLoginModal, setShowLoginModal] = useState(false);
   
-  console.log("[MainPage] Auth state:", { userInfo, isLoginCheck });
+  // console.log("[MainPage] Auth state:", { userInfo, isLoginCheck });
 
   // Listen for custom event to reset to home
   useEffect(() => {
@@ -34,9 +34,9 @@ export default function MainPage() {
     <div>
       <BodyContainer
         sx={{
-          pt: { xs: "50px", md: "60px" },
-          pb: { xs: "50px", md: "60px" },
-          minHeight: { xs: "calc(100vh - 80px)", md: "calc(100vh - 110px)" },
+          pt: { xs: "38px", md: "45px" },
+          pb: { xs: "38px", md: "45px" },
+          minHeight: { xs: "calc(100vh - 60px)", md: "calc(100vh - 83px)" },
         }}
       >
         <AnimatePresence mode="wait">
@@ -98,14 +98,14 @@ function StartSection({
   userInfo: any;
   setShowLoginModal: (show: boolean) => void;
 }) {
-  console.log("[StartSection] userInfo:", userInfo);
+  // console.log("[StartSection] userInfo:", userInfo);
   
   const handleStart = () => {
     if (!userInfo) {
-      console.log("[StartSection] No user info, showing login modal");
+      // console.log("[StartSection] No user info, showing login modal");
       setShowLoginModal(true);
     } else {
-      console.log("[StartSection] User logged in, proceeding to onboarding");
+      // console.log("[StartSection] User logged in, proceeding to onboarding");
       setCurrentStep(1);
     }
   };
@@ -116,9 +116,9 @@ function StartSection({
       <Box
         sx={{
           mx: "auto",
-          width: { xs: "100%", md: "600px", lg2: "700px" },
-          mb: { xs: "28px", md: "40px" },
-          mt: { md: "24px" },
+          width: { xs: "100%", md: "450px", lg2: "525px" },
+          mb: { xs: "21px", md: "30px" },
+          mt: { md: "18px" },
         }}
       >
         <video
@@ -133,7 +133,7 @@ function StartSection({
 
       <Typography
         variant="h1"
-        fontSize={{ xs: 28, md: 48 }}
+        fontSize={{ xs: 21, md: 36 }}
         lineHeight={1.3}
         fontWeight={700}
         align="center"
@@ -144,11 +144,11 @@ function StartSection({
       </Typography>
 
       <Typography
-        fontSize={{ xs: 16, md: 20 }}
+        fontSize={{ xs: 12, md: 15 }}
         lineHeight={1.3}
         fontWeight={400}
         align="center"
-        sx={{ mt: { xs: "18px", md: "24px" }, mb: { xs: "20px", md: "24px" } }}
+        sx={{ mt: { xs: "14px", md: "18px" }, mb: { xs: "15px", md: "18px" } }}
       >
         팔로워 증가, 매출 증진, 상품 홍보까지.
         <br />
@@ -165,9 +165,9 @@ function StartSection({
       <Button
         onClick={handleStart}
         sx={{
-          fontSize: { xs: "16px", md: "18px" },
-          width: { xs: "100%", md: "450px" },
-          py: { xs: "7px", md: "8px" },
+          fontSize: { xs: "12px", md: "14px" },
+          width: { xs: "100%", md: "338px" },
+          py: { xs: "5px", md: "6px" },
           mx: "auto",
         }}
       >

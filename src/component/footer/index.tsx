@@ -7,7 +7,7 @@ export default function Footer() {
       <Container
         maxWidth={false}
         sx={{
-          py: { xs: "16px", md: "24px" },
+          py: { xs: "12px", md: "18px" },
           backgroundColor: "#FFF",
           borderTop: "1px solid #E1E1E1",
         }}
@@ -17,7 +17,7 @@ export default function Footer() {
             <Box sx={{ 
               mb: 0.5, 
               textAlign: "left", 
-              fontSize: '15px', 
+              fontSize: '11px', 
               color: '#888',
               whiteSpace: 'nowrap',
               display: 'inline-block',
@@ -27,14 +27,14 @@ export default function Footer() {
 
             </Box>
           
-            <Typography sx={{ mb: 0.5, textAlign: "left", fontSize: '15px !important', color: '#888 !important' }}>
+            <Typography sx={{ mb: 0.5, textAlign: "left", fontSize: '11px !important', color: '#888 !important' }}>
               아몬드는 스팸메일 발송을 금지하고 있습니다. 스팸메일로 의심되는 경우 발송을 차단하거나 사용을 정지시킬 수 있습니다.
             </Typography>
-            <Typography sx={{ textAlign: "left", fontSize: '15px !important', color: '#888 !important' }}>
+            <Typography sx={{ textAlign: "left", fontSize: '11px !important', color: '#888 !important' }}>
               <MuiLink
                 href="https://sticky-partridge-ee9.notion.site/2172fde8bab680b1b776cb4244d60f9b"
                 underline="hover"
-                sx={{ fontWeight: 500, color: '#888 !important', fontSize: '15px !important' }}
+                sx={{ fontWeight: 500, color: '#888 !important', fontSize: '11px !important' }}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -44,14 +44,14 @@ export default function Footer() {
               <MuiLink
                 href="https://sticky-partridge-ee9.notion.site/2172fde8bab68036bd25f88124abaf02"
                 underline="hover"
-                sx={{ fontWeight: 700, color: '#888 !important', fontSize: '15px !important' }}
+                sx={{ fontWeight: 700, color: '#888 !important', fontSize: '11px !important' }}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 개인정보 처리방침
               </MuiLink>
             </Typography>
-            <Typography sx={{ mt: 1, textAlign: "left", fontSize: '15px !important', color: '#bbb !important' }}>
+            <Typography sx={{ mt: 1, textAlign: "left", fontSize: '11px !important', color: '#bbb !important' }}>
               Copyright © amond. All rights reserved
             </Typography>
           </Box>

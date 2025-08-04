@@ -23,8 +23,8 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
   const isGuest = !userInfo?.id;
   
   // Use available fields from UserDataType or guest defaults
-  const displayName = isGuest ? "게스트 사용자" : (userInfo.authType || "회원");
-  const displayUsername = isGuest ? "@guest" : `@user_${userInfo.id}`;
+  const displayName = isGuest ? "게스트 사용자" : (userInfo.name || userInfo.authType || "회원");
+  const displayUsername = isGuest ? "@guest" : (userInfo.email || `@user_${userInfo.id}`);
 
   const handleLogout = async () => {
     try {
@@ -41,22 +41,8 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
   };
 
   const goToProjectPage = async () => {
-    setLoading(true);
-    try {
-      const response = await apiCall({
-        url: "/content/project",
-        method: "get",
-      });
-      if (response.data.projectId) {
-        router.push(`/project/${response.data.projectId}`);
-      } else {
-        alert("프로젝트가 없습니다.");
-      }
-    } catch (e) {
-      alert("프로젝트 이동 실패");
-    } finally {
-      setLoading(false);
-    }
+    // Always go to /project page
+    router.push("/project");
   };
 
   return (
@@ -64,13 +50,13 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
       <Box
         sx={{
           position: "fixed",
-          top: 100,
-          right: 60,
-          width: 280,
+          top: 75,
+          right: 45,
+          width: 210,
           bgcolor: "#fff",
           borderRadius: 3,
           boxShadow: 3,
-          p: 3,
+          p: 2.25,
           display: { xs: "none", md: "block" },
           zIndex: 1200,
           transition: "all 0.3s ease-in-out",
@@ -81,8 +67,8 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
           onClick={onClose}
           sx={{
             position: "absolute",
-            top: 8,
-            right: 8,
+            top: 6,
+            right: 6,
             color: "grey.500",
           }}
         >
@@ -93,8 +79,8 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Box
             sx={{
-              width: 56,
-              height: 56,
+              width: 42,
+              height: 42,
               borderRadius: "50%",
               bgcolor: "#FFA726",
               display: "flex",
@@ -103,36 +89,29 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
               mr: 2,
             }}
           >
-            <Typography fontSize={32} color="#fff">
+            <Typography fontSize={24} color="#fff">
               {/* User icon (simple) */}
               <span role="img" aria-label="user">👤</span>
             </Typography>
           </Box>
           <Box>
-            <Typography fontWeight={700} fontSize={18}>{displayName}</Typography>
-            <Typography color="grey.600" fontSize={14}>{displayUsername}</Typography>
+            <Typography fontWeight={700} fontSize={13.5}>{displayName}</Typography>
+            <Typography color="grey.600" fontSize={10.5}>{displayUsername}</Typography>
           </Box>
         </Box>
 
         {/* Navigation Buttons - Only show for logged in users */}
         {!isGuest && (
-          <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+          <Box sx={{ mb: 2 }}>
             <Button
               variant="contained"
               color="warning"
-              sx={{ flex: 1, fontWeight: 700, borderRadius: 2 }}
+              fullWidth
+              sx={{ fontWeight: 700, borderRadius: 2 }}
               onClick={goToProjectPage}
               disabled={loading}
             >
-              내 캘린더
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ flex: 1, bgcolor: "#FFF3E0", color: "#FF9800", fontWeight: 700, borderRadius: 2, '&:hover': { bgcolor: "#FFE0B2" } }}
-              onClick={goToProjectPage}
-              disabled={loading}
-            >
-              새 콘텐츠
+              내 컨텐츠 보기
             </Button>
           </Box>
         )}
@@ -181,7 +160,7 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
         <Button
           variant="text"
           fullWidth
-          sx={{ fontWeight: 700, color: "#222", mb: 1, fontSize: 18 }}
+          sx={{ fontWeight: 700, color: "#222", mb: 1, fontSize: 13.5 }}
           onClick={() => setContactModalOpen(true)}
         >
           제작자에게 문의하기

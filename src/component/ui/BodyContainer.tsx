@@ -85,22 +85,22 @@ export function TitleBgContainer({
     <CenterContainer
       imageUrl={imageUrl}
       {...props}
-      sx={{ height: { xs: "200px", md: "250px" } }}
+      sx={{ height: { xs: "150px", md: "188px" } }}
     >
       <BodyContainer>
         <Typography
           variant="h1"
           align="center"
-          fontSize={{ xs: 24, md: 46 }}
+          fontSize={{ xs: 18, md: 35 }}
           fontWeight={700}
         >
           {title}
         </Typography>
         <Typography
-          fontSize={{ xs: 14, md: 18 }}
+          fontSize={{ xs: 10.5, md: 13.5 }}
           align="center"
           color="#666666"
-          sx={{ mt: { xs: "10px", md: "15px" } }}
+          sx={{ mt: { xs: "8px", md: "11px" } }}
         >
           {description}
         </Typography>
@@ -126,13 +126,13 @@ export function AdminBodyContainerWithTitle({
   ];
 
   return (
-    <BodyContainer sx={{ py: { xs: "40px", md: "60px" } }} {...props}>
+    <BodyContainer sx={{ py: { xs: "30px", md: "45px" } }} {...props}>
       <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <TitleTypo40 variant="h1" sx={{ mb: "28px" }}>
+        <TitleTypo40 variant="h1" sx={{ mb: "21px" }}>
           관리자 페이지
         </TitleTypo40>
 
-        <RowStack justifyContent="center" sx={{ mb: "10px" }}>
+        <RowStack justifyContent="center" sx={{ mb: "8px" }}>
           {adminMenuList.map((each, index) => (
             <Button
               key={each.keyName}
@@ -160,7 +160,7 @@ export function AdminBodyContainerWithTitle({
       <Box sx={{ display: { xs: "block", md: "none" } }}>
         <RowStack justifyContent="space-between" sx={{ mb: "12px" }}>
           <Typography
-            fontSize={20}
+            fontSize={15}
             fontWeight={600}
             align="center"
             sx={{ maxWidth: "210px", mx: "auto" }}

@@ -102,6 +102,18 @@ export default function OnboardingStep5({
         } else {
           // Replace scraped images (for main URL)
           setScrapedImages(imageFiles);
+          
+          // Auto-select first 5 scraped images
+          const newSelectedImages = new Set(selectedImages);
+          const currentCount = newSelectedImages.size;
+          const availableSlots = Math.max(0, 5 - currentCount);
+          const imagesToSelect = Math.min(5, imageFiles.length, availableSlots);
+          
+          for (let i = 0; i < imagesToSelect; i++) {
+            newSelectedImages.add(`scraped-${i}`);
+          }
+          
+          setSelectedImages(newSelectedImages);
         }
       } else {
         if (!isAdditional) {
@@ -202,7 +214,22 @@ export default function OnboardingStep5({
     if (compressedFiles.length < selectedFiles.length) {
       alert("이미 업로드한 이미지가 포함되어 있습니다.");
     }
+    
+    const currentImageCount = images.length;
     setImages((prev: File[]) => [...prev, ...compressedFiles]);
+
+    // Auto-select newly uploaded images if we have less than 5 total selected
+    const newSelectedImages = new Set(selectedImages);
+    const currentSelectedCount = newSelectedImages.size;
+    const availableSlots = Math.max(0, 5 - currentSelectedCount);
+    
+    if (availableSlots > 0) {
+      const imagesToSelect = Math.min(compressedFiles.length, availableSlots);
+      for (let i = 0; i < imagesToSelect; i++) {
+        newSelectedImages.add(`manual-${currentImageCount + i}`);
+      }
+      setSelectedImages(newSelectedImages);
+    }
 
     // Reset file input
     if (fileInputRef.current) {
@@ -226,13 +253,25 @@ export default function OnboardingStep5({
 
   const handleRemoveImage = (idx: number) => {
     setImages((prev: File[]) => prev.filter((_, i) => i !== idx));
-    // Remove from selected images if it was selected
-    const imageKey = `manual-${idx}`;
-    if (selectedImages.has(imageKey)) {
-      const newSelectedImages = new Set(selectedImages);
-      newSelectedImages.delete(imageKey);
-      setSelectedImages(newSelectedImages);
-    }
+    
+    // Update selected images indices after removal
+    const newSelectedImages = new Set<string>();
+    selectedImages.forEach(key => {
+      if (key.startsWith('manual-')) {
+        const index = parseInt(key.split('-')[1]);
+        if (index < idx) {
+          newSelectedImages.add(key);
+        } else if (index > idx) {
+          newSelectedImages.add(`manual-${index - 1}`);
+        }
+        // Skip the removed index
+      } else {
+        // Keep scraped image selections
+        newSelectedImages.add(key);
+      }
+    });
+    
+    setSelectedImages(newSelectedImages);
   };
 
   const handleEditImage = (file: File, index: number) => {

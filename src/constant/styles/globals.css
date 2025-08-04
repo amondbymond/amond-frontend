@@ -1,5 +1,14 @@
 @import "variables.css";
 
+/* Reset default font sizes for 75% scaling */
+html {
+  font-size: 14px; /* Base font size reduced from 16px */
+}
+
+body {
+  font-size: 14px;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

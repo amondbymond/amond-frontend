@@ -10,7 +10,7 @@ import {
 import { primaryColor } from "@/constant/styles/styleTheme";
 import { apiCall, handleAPIError } from "@/module/utils/api";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import imageCompression from "browser-image-compression";
 
 export default function ProjectEditModal({
@@ -38,6 +38,21 @@ export default function ProjectEditModal({
   );
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update state when modal opens or projectData changes
+  useEffect(() => {
+    if (modalSwitch) {
+      setEditData({
+        name: projectData.name,
+        category: projectData.category,
+        url: projectData.url,
+        reasonList: projectData.reasonList,
+        description: projectData.description,
+      });
+      setKeptImages((projectData.imageList || []).filter((img: string) => !!img));
+      setNewImages([]);
+    }
+  }, [modalSwitch, projectData]);
 
   const handleClose = () => {
     setEditData({
@@ -173,8 +188,14 @@ export default function ProjectEditModal({
         },
       });
 
+      // The backend now handles brand updates automatically
+
       setModalSwitch(false);
       setProjectDataRefresh((prev: boolean) => !prev);
+      
+      // Dispatch custom event to refresh sidebar
+      window.dispatchEvent(new Event('brand-updated'));
+      
       alert("프로젝트 수정이 완료되었습니다.");
     } catch (e) {
       handleAPIError(e, "프로젝트 수정 실패");

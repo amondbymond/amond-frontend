@@ -74,19 +74,8 @@ function PlanButton({ plan, onOrangeClick, currentPlan, membershipStatus, onMana
 }) {
   const router = useRouter();
   const handleFreeTrial = async () => {
-    try {
-      const response = await apiCall({
-        url: "/content/project",
-        method: "get",
-      });
-      if (response.data.projectId) {
-        router.push(`/project/${response.data.projectId}`);
-      } else {
-        alert("프로젝트가 없습니다.");
-      }
-    } catch (e) {
-      alert("프로젝트 이동 실패");
-    }
+    // Always go to /project page
+    router.push("/project");
   };
   
   // 프로 플랜이고 현재 프로 구독 중인 경우 (활성 상태)
@@ -420,23 +409,26 @@ export default function SubscribePage() {
   };
 
   return (
-    <Box sx={{ bgcolor: "#FFF3E0", minHeight: "100vh", pb: 6 }}>
+    <Box sx={{ bgcolor: "#FFF3E0", minHeight: "100vh", pb: 4.5 }}>
       <ProTrialModal open={proModalOpen} onClose={() => setProModalOpen(false)} />
-      <Box sx={{ maxWidth: 1400, mx: "auto", pt: 8, px: 2 }}>
+      <Box sx={{ maxWidth: 1200, mx: "auto", pt: 6, px: { xs: 2, md: 4 } }}>
         {/* 현재 구독 상태 표시 */}
         {currentPlan === 'pro' && membershipStatus === 'active' && (
           <Box sx={{ 
-            mb: 4, 
-            p: 3, 
-            bgcolor: '#fff', 
-            borderRadius: 3,
-            border: '2px solid #FFA726',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            mb: 3,
+            mx: { xs: 0, md: '5%', lg: '8%' }
           }}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: '#fff', 
+              borderRadius: 3,
+              border: '2px solid #FFA726',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
             <Box>
-              <Typography fontSize={20} fontWeight={700} mb={1}>
+              <Typography fontSize={15} fontWeight={700} mb={0.75}>
                 🎉 현재 프로 멤버십을 이용 중입니다!
               </Typography>
               <Typography color="grey.600">
@@ -446,23 +438,27 @@ export default function SubscribePage() {
             <UnifiedButton variant="colored" onClick={handleManageSubscription}>
               구독 관리
             </UnifiedButton>
+            </Box>
           </Box>
         )}
         
         {/* 취소된 구독 상태 표시 */}
         {currentPlan === 'pro' && membershipStatus === 'cancelled' && (
           <Box sx={{ 
-            mb: 4, 
-            p: 3, 
-            bgcolor: '#fff', 
-            borderRadius: 3,
-            border: '2px solid #FF9800',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            mb: 3,
+            mx: { xs: 0, md: '5%', lg: '8%' }
           }}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: '#fff', 
+              borderRadius: 3,
+              border: '2px solid #FF9800',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
             <Box>
-              <Typography fontSize={20} fontWeight={700} mb={1} color="#FF9800">
+              <Typography fontSize={15} fontWeight={700} mb={0.75} color="#FF9800">
                 구독이 취소되었습니다
               </Typography>
               <Typography color="grey.600">
@@ -472,17 +468,21 @@ export default function SubscribePage() {
             <UnifiedButton variant="colored" onClick={handleManageSubscription}>
               프로필 보기
             </UnifiedButton>
+            </Box>
           </Box>
         )}
-        <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: { xs: 'wrap', md: 'nowrap' }, overflowX: { xs: 'auto', md: 'visible' } }}>
-          {plans.map((plan) => (
-            <Box key={plan.name} sx={{ minWidth: 300, display: 'flex', flex: { xs: '0 0 auto', md: '1 1 0' }, maxWidth: { xs: 'none', md: '25%' } }}>
+        <Box sx={{ 
+          mx: { xs: 0, md: '5%', lg: '8%' }
+        }}>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: { xs: 'wrap', md: 'nowrap' }, overflowX: { xs: 'auto', md: 'visible' } }}>
+            {plans.map((plan) => (
+              <Box key={plan.name} sx={{ minWidth: 250, display: 'flex', flex: { xs: '0 0 auto', md: '1 1 0' } }}>
               <Paper
                 elevation={plan.recommend ? 8 : 2}
                 sx={{
-                  borderRadius: 4,
-                  p: 3,
-                  minHeight: 480,
+                  borderRadius: 3,
+                  p: 2.5,
+                  minHeight: 420,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
@@ -496,15 +496,15 @@ export default function SubscribePage() {
                   <Box
                     sx={{
                       position: "absolute",
-                      top: 18,
-                      right: 18,
+                      top: 14,
+                      right: 14,
                       bgcolor: "#FFF3E0",
                       color: "#FF9800",
                       px: 1.5,
                       py: 0.5,
                       borderRadius: 2,
                       fontWeight: 700,
-                      fontSize: 13,
+                      fontSize: 10,
                     }}
                   >
                     가장 추천해요
@@ -514,15 +514,15 @@ export default function SubscribePage() {
                   <Box
                     sx={{
                       position: "absolute",
-                      top: 18,
-                      right: 18,
+                      top: 14,
+                      right: 14,
                       bgcolor: "#4CAF50",
                       color: "#fff",
                       px: 1.5,
                       py: 0.5,
                       borderRadius: 2,
                       fontWeight: 700,
-                      fontSize: 13,
+                      fontSize: 10,
                     }}
                   >
                     현재 이용 중
@@ -532,27 +532,27 @@ export default function SubscribePage() {
                   <Box
                     sx={{
                       position: "absolute",
-                      top: 18,
-                      right: 18,
+                      top: 14,
+                      right: 14,
                       bgcolor: "#FF9800",
                       color: "#fff",
                       px: 1.5,
                       py: 0.5,
                       borderRadius: 2,
                       fontWeight: 700,
-                      fontSize: 13,
+                      fontSize: 10,
                     }}
                   >
                     구독 취소됨
                   </Box>
                 )}
-                <Typography fontWeight={700} fontSize={28} mb={1} align="left">
+                <Typography fontWeight={700} fontSize={21} mb={1} align="left">
                   {plan.name}
                 </Typography>
-                <Typography color="grey.600" fontSize={15} mb={2} align="left">
+                <Typography color="grey.600" fontSize={11} mb={2} align="left">
                   {plan.description}
                 </Typography>
-                <Typography fontWeight={700} fontSize={24} mb={2} align="left">
+                <Typography fontWeight={700} fontSize={18} mb={2} align="left">
                   {plan.price}
                 </Typography>
                 <PlanButton 
@@ -571,7 +571,7 @@ export default function SubscribePage() {
                   onManageClick={handleManageSubscription}
                 />
                 <Divider sx={{ my: 2, width: "100%" }} />
-                <Typography fontWeight={700} fontSize={16} mb={1} align="left">
+                <Typography fontWeight={700} fontSize={12} mb={1} align="left">
                   하이라이트
                 </Typography>
                 <Box component="ul" sx={{ pl: 0, m: 0, width: "100%" }}>
@@ -582,7 +582,7 @@ export default function SubscribePage() {
                       sx={{
                         display: "flex",
                         justifyContent: "space-between",
-                        fontSize: 15,
+                        fontSize: 11,
                         mb: 1,
                         fontWeight: 500,
                         listStyle: "none",
@@ -595,8 +595,9 @@ export default function SubscribePage() {
                   ))}
                 </Box>
               </Paper>
-            </Box>
-          ))}
+              </Box>
+            ))}
+          </Box>
         </Box>
       </Box>
     </Box>

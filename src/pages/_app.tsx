@@ -41,7 +41,7 @@ function AppInner({
   return (
     // 배경 설정
     <Container maxWidth={false} sx={{ p: isProjectPage ? 0 : undefined }}>
-      {!isProjectPage && <NavBar />}
+      <NavBar />
       <main>
         <Component {...pageProps} />
       </main>

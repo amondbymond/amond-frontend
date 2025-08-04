@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import { scale } from "./scaleConfig";
 
 export const primaryColor = "#FF8000";
 export const secondaryColor = "#F5C921";
@@ -24,18 +25,18 @@ export const primaryGray700 = "#4D4D4D";
 export const primaryGray800 = "#333333";
 export const primaryGray900 = "#1A1A1A";
 
-// lg 최대 너비
-export const maxWidth = 1440;
+// lg 최대 너비 (scaled down)
+export const maxWidth = 1080; // 1440 * 0.75
 
-// 공통으로 사용되는 px 값
-export const xsPx = "16px";
-export const mdPx = "20px";
+// 공통으로 사용되는 px 값 (scaled down)
+export const xsPx = scale(16); // 12px
+export const mdPx = scale(20); // 15px
 
-// 공통으로 사용되는 borderRadius 값
-export const commonBorderRadius = "10px";
+// 공통으로 사용되는 borderRadius 값 (scaled down)
+export const commonBorderRadius = scale(10); // 7.5px → 8px
 
-// 공통으로 사용되는 textField padding 값
-export const textFieldPadding = "12px";
+// 공통으로 사용되는 textField padding 값 (scaled down)
+export const textFieldPadding = scale(12); // 9px
 
 // 기본 Breakpoints 타입을 확장 시
 declare module "@mui/material/styles" {
@@ -59,6 +60,7 @@ export const muiTheme = createTheme({
       main: secondaryColor,
     },
   },
+  spacing: (factor: number) => `${0.75 * 8 * factor}px`, // Default spacing * 0.75
   breakpoints: {
     values: {
       xs: 10,
@@ -87,6 +89,19 @@ export const muiTheme = createTheme({
       "Segoe UI Emoji",
       "Segoe UI Symbol",
     ].join(","),
+    // Scale all typography variants
+    h1: { fontSize: scale(96) },
+    h2: { fontSize: scale(60) },
+    h3: { fontSize: scale(48) },
+    h4: { fontSize: scale(34) },
+    h5: { fontSize: scale(24) },
+    h6: { fontSize: scale(20) },
+    subtitle1: { fontSize: scale(16) },
+    subtitle2: { fontSize: scale(14) },
+    body1: { fontSize: scale(16) },
+    body2: { fontSize: scale(14) },
+    caption: { fontSize: scale(12) },
+    overline: { fontSize: scale(10) },
   },
   components: {
     MuiButton: {
@@ -112,17 +127,24 @@ export const muiTheme = createTheme({
       },
       styleOverrides: {
         root: ({ theme }) => ({
-          fontSize: "14px", // 기본 폰트 크기
-          paddingTop: "4px",
+          fontSize: scale(14), // 10.5px
+          paddingTop: scale(6),
+          paddingBottom: scale(6),
+          paddingLeft: scale(16),
+          paddingRight: scale(16),
           [theme.breakpoints.up("lg")]: {
-            fontSize: "16px", // lg 이상에서 폰트 크기
-            paddingTop: "4px",
-            paddingBottom: "4px",
+            fontSize: scale(16), // 12px
+            paddingTop: scale(8),
+            paddingBottom: scale(8),
+            paddingLeft: scale(20),
+            paddingRight: scale(20),
           },
           [theme.breakpoints.up("xl")]: {
-            fontSize: "18px", // lg 이상에서 폰트 크기
-            paddingTop: "6px",
-            paddingBottom: "6px",
+            fontSize: scale(18), // 13.5px
+            paddingTop: scale(10),
+            paddingBottom: scale(10),
+            paddingLeft: scale(24),
+            paddingRight: scale(24),
           },
         }),
 

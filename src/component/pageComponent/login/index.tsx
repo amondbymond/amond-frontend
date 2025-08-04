@@ -126,21 +126,26 @@ export default function LoginPage() {
         }
       } catch (e) {
         if (axios.isAxiosError(e)) {
-          if (e?.response?.data.includes("이메일")) {
-            setError("email", {
-              type: "manual",
-              message: "이메일을 확인해주세요!",
-            });
-          } else if (e?.response?.data.includes("비밀번호")) {
-            setError("password", {
-              type: "manual",
-              message: "비밀번호가 올바르지 않습니다!",
-            });
+          const errorMessage = e?.response?.data?.message || e?.response?.data || '';
+          if (typeof errorMessage === 'string') {
+            if (errorMessage.includes("이메일")) {
+              setError("email", {
+                type: "manual",
+                message: "이메일을 확인해주세요!",
+              });
+            } else if (errorMessage.includes("비밀번호")) {
+              setError("password", {
+                type: "manual",
+                message: "비밀번호가 올바르지 않습니다!",
+              });
+            } else {
+              alert(errorMessage);
+            }
           } else {
-            alert(e);
+            alert("로그인 중 오류가 발생했습니다.");
           }
         } else {
-          alert(e);
+          alert("로그인 중 오류가 발생했습니다.");
         }
       }
     }
@@ -149,14 +154,14 @@ export default function LoginPage() {
   return (
     <section>
       <BodyContainer
-        sx={{ pt: { xs: "80px", md: "40px" }, pb: { xs: "80px", md: "60px" } }}
+        sx={{ pt: { xs: "60px", md: "30px" }, pb: { xs: "60px", md: "45px" } }}
       >
-        <Box sx={{ maxWidth: "464px", mx: "auto" }}>
+        <Box sx={{ maxWidth: "348px", mx: "auto" }}>
           <Typography
             align="center"
-            fontSize={{ xs: 24, md: 30 }}
+            fontSize={{ xs: 18, md: 23 }}
             fontWeight={700}
-            sx={{ mb: "40px" }}
+            sx={{ mb: "30px" }}
           >
             로그인
           </Typography>
@@ -165,8 +170,8 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit(onSubmit)}>
             {inputList.map(function (each) {
               return (
-                <Box key={each.label} sx={{ mt: "20px" }}>
-                  <Typography fontSize={14} sx={{ mb: "4px" }}>
+                <Box key={each.label} sx={{ mt: "15px" }}>
+                  <Typography fontSize={10.5} sx={{ mb: "3px" }}>
                     {each.label}
                   </Typography>
 
@@ -217,7 +222,7 @@ export default function LoginPage() {
             {/* 자동로그인, 비밀번호 찾기 */}
             <RowStack
               justifyContent="space-between"
-              sx={{ mt: "8px", mb: "30px" }}
+              sx={{ mt: "6px", mb: "23px" }}
             >
               <RowStack spacing="4px">
                 <Checkbox
@@ -225,12 +230,12 @@ export default function LoginPage() {
                   onChange={checkAutoLogin}
                   checked={autoLogin}
                 />
-                <Typography fontSize={{ xs: 12, md: 13 }}>
+                <Typography fontSize={{ xs: 9, md: 10 }}>
                   자동로그인
                 </Typography>
               </RowStack>
               <Link href="/login/findPassword">
-                <Typography fontSize={{ xs: 12, md: 13 }}>
+                <Typography fontSize={{ xs: 9, md: 10 }}>
                   비밀번호 찾기
                 </Typography>
               </Link>
@@ -241,14 +246,14 @@ export default function LoginPage() {
               fullWidth
               disabled={!isValid || isLoading}
               sx={{
-                height: "40px",
+                height: "30px",
               }}
             >
               로그인
             </Button>
           </form>
 
-          <Divider sx={{ my: "28px" }} />
+          <Divider sx={{ my: "21px" }} />
 
           <RowStack spacing="6px" justifyContent="center">
             <Typography align="center" color="#666">
@@ -265,12 +270,12 @@ export default function LoginPage() {
             <Button
               sx={{
                 width: 1,
-                height: "48px",
+                height: "36px",
                 color: "#3A2929",
                 backgroundColor: "#FEE500",
-                fontSize: "16px",
-                mt: "32px",
-                mb: "8px",
+                fontSize: "12px",
+                mt: "24px",
+                mb: "6px",
               }}
             >
               <CardMedia
@@ -278,9 +283,9 @@ export default function LoginPage() {
                 alt="kakao icon"
                 src="/assets/icon/kakaoLogin.png"
                 sx={{
-                  width: "20px",
-                  height: "20px",
-                  mr: "8px",
+                  width: "15px",
+                  height: "15px",
+                  mr: "6px",
                 }}
               />
               카카오 계정으로 시작하기
@@ -291,11 +296,11 @@ export default function LoginPage() {
             <Button
               sx={{
                 width: 1,
-                height: "48px",
+                height: "36px",
                 backgroundColor: "#FFF",
                 color: "#333",
                 border: "1px solid #C9C9C9",
-                fontSize: "16px",
+                fontSize: "12px",
               }}
             >
               <CardMedia
@@ -303,9 +308,9 @@ export default function LoginPage() {
                 alt="google icon"
                 src="/assets/icon/googleLogin.png"
                 sx={{
-                  width: "20px",
-                  height: "20px",
-                  mr: "8px",
+                  width: "15px",
+                  height: "15px",
+                  mr: "6px",
                 }}
               />
               구글 계정으로 시작하기
