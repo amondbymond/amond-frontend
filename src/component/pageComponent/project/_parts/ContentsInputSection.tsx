@@ -1,4 +1,5 @@
 import { primaryColor } from "@/constant/styles/styleTheme";
+import { directionList } from "@/constant/commonVariable";
 import {
   Box,
   Button,
@@ -92,7 +93,7 @@ export default function ContentsInputSection({
   ];
   const uploadList = ["주 1회", "주 2회", "주 3회"];
   const ratioList = ["1:1", "4:5", "9:16"];
-  const directionList = ["정보형", "감성전달형", "홍보중심형"];
+  // directionList is now imported from commonVariable
 
   const handleSwitchChange = (key: string, value: boolean) => {
     const newValue =

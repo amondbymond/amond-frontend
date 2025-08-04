@@ -48,6 +48,9 @@ export const categoryList = [
 /** Content generation constants */
 export const IMAGES_PER_FEEDSET = 4; // Change to 9 when needed
 
+/** Direction options for content */
+export const directionList = ["정보형", "감성전달형", "홍보중심형"];
+
 /** Content types by category */
 export const CONTENT_TYPES = {
   '뷰티/미용': [
