@@ -440,7 +440,7 @@ export function parseEditableSummaryForDisplay(
             elements.push(
               <EditableDropdown
                 key={`content-type-${placeholder.content.index}`}
-                options={categoryOptions}
+                options={[...categoryOptions]}
                 value={selectedContentTypes?.[placeholder.content.index] || placeholder.content.value}
                 onChange={(newValue) => {
                   if (selectedContentTypes && setSelectedContentTypes) {
