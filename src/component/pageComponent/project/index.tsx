@@ -22,11 +22,11 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Grid as MuiGrid,
   Switch,
   Divider,
   Chip,
 } from "@mui/material";
+import Grid2 from "@mui/material/Unstable_Grid2";
 import { useEffect, useState, useContext } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -1039,8 +1039,8 @@ export default function ProjectPage() {
                 이미지 {selectedImageIndex + 1} 설정
               </Typography>
               
-              <MuiGrid container spacing={2}>
-                <MuiGrid item xs={12} sm={6}>
+              <Grid2 container spacing={2}>
+                <Grid2 size={6}>
                   {/* Content Type Selection */}
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                     <InputLabel sx={{ fontSize: 12 }}>콘텐츠 타입</InputLabel>
@@ -1061,9 +1061,9 @@ export default function ProjectPage() {
                       ))}
                     </Select>
                   </FormControl>
-                </MuiGrid>
+                </Grid2>
                 
-                <MuiGrid item xs={12} sm={6}>
+                <Grid2 size={6}>
                   {/* Image Size Selection */}
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                     <InputLabel sx={{ fontSize: 12 }}>이미지 사이즈</InputLabel>
@@ -1082,8 +1082,8 @@ export default function ProjectPage() {
                       <MenuItem value="3:2" sx={{ fontSize: 12 }}>3:2 (가로형)</MenuItem>
                     </Select>
                   </FormControl>
-                </MuiGrid>
-              </MuiGrid>
+                </Grid2>
+              </Grid2>
               
               {/* SNS Event Toggle */}
               <FormControlLabel
