@@ -16,6 +16,7 @@ interface SummarizationProps {
   onGenerateContent: (additionalData?: any) => void;
   onGenerateImages?: () => void;
   onBrandInputChange?: (updatedBrandInput: any) => void;
+  autoGenerate?: boolean;
 }
 
 // Utility function to calculate relative luminance and determine if color is light or dark
