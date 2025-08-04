@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // SSG일 경우
-  output: "export",
+  // Removed static export to support API routes
+  // output: "export",
   images: {
+    // Keep unoptimized for now to avoid image optimization issues
     unoptimized: true,
   },
 };
