@@ -1369,8 +1369,8 @@ export default function ProjectSessionSidebar({
                 이미지 {selectedImageIndex + 1} 설정
               </Typography>
               
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Box sx={{ flex: { xs: '0 0 100%', sm: '0 0 48%' } }}>
                   {/* Content Type Selection */}
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                     <InputLabel sx={{ fontSize: 12 }}>콘텐츠 타입</InputLabel>
@@ -1391,9 +1391,9 @@ export default function ProjectSessionSidebar({
                       ))}
                     </Select>
                   </FormControl>
-                </Grid>
+                </Box>
                 
-                <Grid item xs={12} sm={6}>
+                <Box sx={{ flex: { xs: '0 0 100%', sm: '0 0 48%' } }}>
                   {/* Image Size Selection */}
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                     <InputLabel sx={{ fontSize: 12 }}>이미지 사이즈</InputLabel>
@@ -1412,8 +1412,8 @@ export default function ProjectSessionSidebar({
                       <MenuItem value="3:2" sx={{ fontSize: 12 }}>3:2 (가로형)</MenuItem>
                     </Select>
                   </FormControl>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
               
               {/* SNS Event Toggle */}
               <FormControlLabel
