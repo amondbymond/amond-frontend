@@ -288,7 +288,7 @@ export default function NavBar() {
                           <PersonIcon
                             sx={{
                               color: "white",
-                              fontSize: "18px",
+                              fontSize: "27px", // 18px * 1.5 = 27px
                             }}
                           />
                         </IconButton>

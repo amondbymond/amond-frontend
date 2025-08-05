@@ -965,7 +965,7 @@ export default function ProjectSessionSidebar({
                                 fontWeight: 400,
                               }}
                             >
-                              새 feed set 생성
+                              새 콘텐츠 세트 생성
                             </Typography>
                           </ListItemButton>
                         </ListItem>
@@ -1264,7 +1264,7 @@ export default function ProjectSessionSidebar({
         fullWidth
       >
         <DialogTitle sx={{ fontSize: 14, fontWeight: 600 }}>
-          새 Feed Set 생성 - {selectedBrandForFeedSet?.name}
+        새 콘텐츠 세트 생성 - {selectedBrandForFeedSet?.name}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mb: 2 }}>

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { Box, Button, Typography, Divider, IconButton, Fade } from "@mui/material";
 import LoginContext from "@/module/ContextAPI/LoginContext";
 import { useRouter } from "next/router";
@@ -18,6 +18,7 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Handle guest users - show sidebar even without userInfo
   const isGuest = !userInfo?.id;
@@ -25,6 +26,23 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
   // Use available fields from UserDataType or guest defaults
   const displayName = isGuest ? "게스트 사용자" : (userInfo.name || userInfo.authType || "회원");
   const displayUsername = isGuest ? "@guest" : (userInfo.email || `@user_${userInfo.id}`);
+
+  // Handle click outside to close sidebar
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleLogout = async () => {
     try {
@@ -48,6 +66,7 @@ export default function UserSidebar({ onClose }: UserSidebarProps) {
   return (
     <Fade in={true} timeout={300}>
       <Box
+        ref={sidebarRef}
         sx={{
           position: "fixed",
           top: 75,
