@@ -47,6 +47,7 @@ export const apiCall = async ({
 /** API 통신 에러 */
 export const handleAPIError = (e: any, failMessage: string) => {
   if (e && isAxiosError(e) && e?.response?.data?.message) {
+    console.error("API Error:", e.response.data);
     // 로그인이 필요한 경우는 alert 없이 바로 로그인 페이지로 이동
     if (e?.response?.data?.message.includes("로그인")) {
       window.location.href = "/login";

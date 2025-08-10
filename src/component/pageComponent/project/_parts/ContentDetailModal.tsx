@@ -13,9 +13,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DownloadIcon from "@mui/icons-material/Download";
+import UsageLimitWarning from "@/component/ui/UsageLimitWarning";
+import LoginContext from "@/module/ContextAPI/LoginContext";
 
 export default function ContentDetailModal({
   modalSwitch,
@@ -73,6 +75,38 @@ export default function ContentDetailModal({
   const [editedCaption, setEditedCaption] = useState(content.caption || "");
   const [feedback, setFeedback] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showUsageWarning, setShowUsageWarning] = useState(false);
+  const [usageLimits, setUsageLimits] = useState<any>(null);
+  const [pendingAction, setPendingAction] = useState<"caption" | "image" | "all" | "save" | null>(null);
+  const { userInfo } = useContext(LoginContext);
+
+  const checkUsageAndProceed = async (action: "caption" | "image" | "all" | "save") => {
+    try {
+      const usageResponse = await apiCall({
+        url: "/content/usage-limits",
+        method: "GET",
+      });
+      const limits = usageResponse.data.limits;
+      setUsageLimits(limits);
+      
+      if (!limits.edits.canEdit || (limits.edits.remainingToday !== null && limits.edits.remainingToday <= 0)) {
+        setPendingAction(action);
+        setShowUsageWarning(true);
+        return false;
+      }
+      
+      if (limits.edits.remainingToday !== null && limits.edits.remainingToday <= 1) {
+        setPendingAction(action);
+        setShowUsageWarning(true);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Failed to check usage limits:", error);
+      return true; // Continue if check fails
+    }
+  };
 
   const regenerate = async (requestType: "caption" | "image" | "all") => {
     try {
@@ -82,6 +116,10 @@ export default function ContentDetailModal({
         alert("피드백을 입력해주세요!");
         return;
       }
+
+      // Check usage limits first
+      const canProceed = await checkUsageAndProceed(requestType);
+      if (!canProceed) return;
 
       if (!confirm("재생성 하시겠습니까?\n생성된 콘텐츠는 삭제됩니다!")) {
         return;
@@ -116,6 +154,11 @@ export default function ContentDetailModal({
   const handleSaveCaption = async () => {
     try {
       if (isLoading) return;
+      
+      // Check usage limits first
+      const canProceed = await checkUsageAndProceed("save");
+      if (!canProceed) return;
+      
       setIsLoading(true);
       await apiCall({
         url: "/content/caption",
@@ -518,6 +561,29 @@ export default function ContentDetailModal({
 
       {isLoading && (
         <LoadingModal modalSwitch={isLoading} setModalSwitch={setIsLoading} />
+      )}
+      
+      {showUsageWarning && usageLimits && (
+        <UsageLimitWarning
+          open={showUsageWarning}
+          onClose={() => {
+            setShowUsageWarning(false);
+            setPendingAction(null);
+          }}
+          onConfirm={() => {
+            setShowUsageWarning(false);
+            if (pendingAction === "save") {
+              handleSaveCaption();
+            } else if (pendingAction) {
+              regenerate(pendingAction);
+            }
+            setPendingAction(null);
+          }}
+          type="content_edit"
+          remaining={usageLimits.edits.remainingToday || 0}
+          canPerform={usageLimits.edits.canEdit}
+          userGrade={userInfo?.grade}
+        />
       )}
     </BaseModalBox>
   );

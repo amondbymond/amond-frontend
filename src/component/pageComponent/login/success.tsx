@@ -2,13 +2,50 @@ import { BodyContainer } from "@/component/ui/BodyContainer";
 import { CenterProgress } from "@/component/ui/BoxStack";
 import { apiCall, handleAPIError } from "@/module/utils/api";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import LoginContext from "@/module/ContextAPI/LoginContext";
 
 export default function LoginSuccessPage() {
   const router = useRouter();
+  const { setUserInfo } = useContext(LoginContext);
 
   useEffect(() => {
     const goToPreviousPage = async () => {
+      // Check for session token in URL (for OAuth incognito mode support)
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionToken = urlParams.get('sessionToken');
+      const returnTo = urlParams.get('returnTo');
+      
+      if (sessionToken) {
+        // Store session token for incognito mode
+        localStorage.setItem("amondSessionToken", sessionToken);
+        console.log("OAuth session token stored for incognito mode");
+        
+        // Fetch user info with the new session token
+        try {
+          const loginCheckResponse = await apiCall({
+            url: "/auth/loginCheck",
+            method: "get",
+          });
+          
+          if (loginCheckResponse.data.id) {
+            // Try to get full user data
+            try {
+              const userResponse = await apiCall({
+                url: "/auth/user",
+                method: "get",
+              });
+              setUserInfo(userResponse.data);
+            } catch (userError) {
+              // Fallback to basic data if user endpoint fails
+              setUserInfo(loginCheckResponse.data);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch user info after OAuth login:", e);
+        }
+      }
+      
       // 약 1초 대기
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -37,10 +74,6 @@ export default function LoginSuccessPage() {
       }
 
       let prevRoute = sessionStorage.getItem("prevRoute");
-      
-      // Check if we came from a project page
-      const urlParams = new URLSearchParams(window.location.search);
-      const returnTo = urlParams.get('returnTo');
       
       if (returnTo && returnTo.startsWith('/project/')) {
         router.push(returnTo);

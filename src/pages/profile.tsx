@@ -36,6 +36,21 @@ interface SubscriptionInfo {
   price: number;
 }
 
+interface UsageLimits {
+  projects: {
+    remaining: number;
+    canCreate: boolean;
+  };
+  singleImages: {
+    remaining: number;
+    canCreate: boolean;
+  };
+  edits: {
+    remainingToday: number | null;
+    canEdit: boolean;
+  };
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -49,6 +64,7 @@ export default function ProfilePage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [usageLimits, setUsageLimits] = useState<UsageLimits | null>(null);
 
   useEffect(() => {
     fetchSubscriptionData();
@@ -86,6 +102,17 @@ export default function ProfilePage() {
           nextBillingDate: userResponse.data.membershipEndDate,
           price: 9900
         });
+      }
+
+      // 사용 한도 정보 가져오기
+      try {
+        const usageResponse = await apiCall({
+          url: "/content/usage-limits",
+          method: "GET",
+        });
+        setUsageLimits(usageResponse.data.limits);
+      } catch (error) {
+        console.error("Failed to fetch usage limits:", error);
       }
     } catch (error) {
       console.error("Failed to fetch subscription data:", error);
@@ -231,6 +258,91 @@ export default function ProfilePage() {
           </Box>
         </Paper>
 
+        {/* 사용 한도 현황 */}
+        {usageLimits && (
+          <Paper sx={{ p: 4, mb: 3, borderRadius: 3 }}>
+            <Typography fontSize={20} fontWeight={700} mb={3}>
+              사용 한도 현황
+            </Typography>
+            
+            <Divider sx={{ mb: 3 }} />
+            
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+              {/* 프로젝트 (채팅방) */}
+              <Box sx={{ 
+                p: 3, 
+                borderRadius: 2, 
+                bgcolor: usageLimits.projects.canCreate ? '#E8F5E9' : '#FFEBEE',
+                border: `1px solid ${usageLimits.projects.canCreate ? '#4CAF50' : '#F44336'}`,
+              }}>
+                <Typography fontWeight={600} color={usageLimits.projects.canCreate ? 'success.main' : 'error.main'} mb={1}>
+                  프로젝트 (채팅방)
+                </Typography>
+                <Typography fontSize={24} fontWeight={700} mb={1}>
+                  {usageLimits.projects.remaining}개 남음
+                </Typography>
+                <Typography fontSize={14} color="grey.600">
+                  {userInfo?.grade === 'basic' || userInfo?.grade === 'c' || userInfo?.grade === 'C' ? '총 1개 생성 가능' :
+                   userInfo?.grade === 'pro' ? '총 4개 생성 가능' :
+                   userInfo?.grade === 'business' ? '총 10개 생성 가능' : ''}
+                </Typography>
+              </Box>
+
+              {/* 개별 이미지 */}
+              <Box sx={{ 
+                p: 3, 
+                borderRadius: 2, 
+                bgcolor: usageLimits.singleImages.canCreate ? '#E8F5E9' : '#FFEBEE',
+                border: `1px solid ${usageLimits.singleImages.canCreate ? '#4CAF50' : '#F44336'}`,
+              }}>
+                <Typography fontWeight={600} color={usageLimits.singleImages.canCreate ? 'success.main' : 'error.main'} mb={1}>
+                  개별 이미지
+                </Typography>
+                <Typography fontSize={24} fontWeight={700} mb={1}>
+                  {usageLimits.singleImages.remaining}개 남음
+                </Typography>
+                <Typography fontSize={14} color="grey.600">
+                  {userInfo?.grade === 'basic' || userInfo?.grade === 'c' || userInfo?.grade === 'C' ? '총 1개 생성 가능' :
+                   userInfo?.grade === 'pro' ? '총 20개 생성 가능' :
+                   userInfo?.grade === 'business' ? '총 100개 생성 가능' : ''}
+                </Typography>
+              </Box>
+
+              {/* 콘텐츠 수정 */}
+              <Box sx={{ 
+                p: 3, 
+                borderRadius: 2, 
+                bgcolor: usageLimits.edits.canEdit ? '#E8F5E9' : '#FFEBEE',
+                border: `1px solid ${usageLimits.edits.canEdit ? '#4CAF50' : '#F44336'}`,
+              }}>
+                <Typography fontWeight={600} color={usageLimits.edits.canEdit ? 'success.main' : 'error.main'} mb={1}>
+                  콘텐츠 수정 (오늘)
+                </Typography>
+                <Typography fontSize={24} fontWeight={700} mb={1}>
+                  {usageLimits.edits.remainingToday === null ? '무제한' : `${usageLimits.edits.remainingToday}회 남음`}
+                </Typography>
+                <Typography fontSize={14} color="grey.600">
+                  {userInfo?.grade === 'basic' || userInfo?.grade === 'c' || userInfo?.grade === 'C' ? '수정 불가' :
+                   userInfo?.grade === 'pro' ? '하루 5회 수정 가능' :
+                   userInfo?.grade === 'business' ? '무제한 수정 가능' : ''}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* 한도 초과 시 업그레이드 메시지 */}
+            {(!usageLimits.projects.canCreate || !usageLimits.singleImages.canCreate || !usageLimits.edits.canEdit) && 
+             (userInfo?.grade === 'basic' || userInfo?.grade === 'c' || userInfo?.grade === 'C' || userInfo?.grade === 'pro') && (
+              <Alert severity="info" sx={{ mt: 3 }}>
+                한도를 모두 사용하셨나요? 
+                <Box component="span" sx={{ fontWeight: 600, cursor: 'pointer', color: 'primary.main' }} onClick={() => router.push('/subscribe')}>
+                  {' '}플랜을 업그레이드
+                </Box>
+                하여 더 많은 콘텐츠를 생성하세요!
+              </Alert>
+            )}
+          </Paper>
+        )}
+
         {/* 취소된 구독 알림 */}
         {userInfo.grade === 'pro' && userInfo.membershipStatus === 'cancelled' && (
           <Alert severity="warning" sx={{ mb: 3 }}>
@@ -336,15 +448,15 @@ export default function ProfilePage() {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography fontSize={18}>✓</Typography>
-              <Typography>월 콘텐츠 발행 횟수 (그리드): 4세트</Typography>
+              <Typography>프로젝트 (채팅방) 생성: 총 4개</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography fontSize={18}>✓</Typography>
-              <Typography>콘텐츠별 수정 횟수: 3회</Typography>
+              <Typography>개별 이미지 생성: 총 20개 (프로젝트당 5개)</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography fontSize={18}>✓</Typography>
-              <Typography>기획도 생성: 4세트</Typography>
+              <Typography>콘텐츠 수정: 하루 5회</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography fontSize={18}>✓</Typography>
@@ -379,15 +491,15 @@ export default function ProfilePage() {
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography fontSize={18}>✓</Typography>
-                  <Typography>월 콘텐츠 발행 횟수 (그리드): 1세트</Typography>
+                  <Typography>프로젝트 (채팅방) 생성: 총 1개</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography fontSize={18}>✓</Typography>
-                  <Typography>콘텐츠별 수정 횟수: 2회</Typography>
+                  <Typography>개별 이미지 생성: 총 1개</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography fontSize={18}>✓</Typography>
-                  <Typography>기획도 생성: 1세트</Typography>
+                  <Typography>콘텐츠 수정: 불가</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography fontSize={18}>✓</Typography>
@@ -405,17 +517,17 @@ export default function ProfilePage() {
                 <Box>
                   <Typography fontWeight={600} color="grey.700" mb={1}>현재 베이직 플랜</Typography>
                   <Box sx={{ pl: 2 }}>
-                    <Typography fontSize={14}>• 월 콘텐츠 발행: 1세트</Typography>
-                    <Typography fontSize={14}>• 콘텐츠별 수정: 2회</Typography>
-                    <Typography fontSize={14}>• 기획도 생성: 1세트</Typography>
+                    <Typography fontSize={14}>• 프로젝트 생성: 1개</Typography>
+                    <Typography fontSize={14}>• 개별 이미지: 1개</Typography>
+                    <Typography fontSize={14}>• 콘텐츠 수정: 불가</Typography>
                   </Box>
                 </Box>
                 <Box>
                   <Typography fontWeight={600} color="#FF9800" mb={1}>프로 플랜 (₩9,900/월)</Typography>
                   <Box sx={{ pl: 2 }}>
-                    <Typography fontSize={14} color="#FF9800">• 월 콘텐츠 발행: 4세트 ↑</Typography>
-                    <Typography fontSize={14} color="#FF9800">• 콘텐츠별 수정: 3회 ↑</Typography>
-                    <Typography fontSize={14} color="#FF9800">• 기획도 생성: 4세트 ↑</Typography>
+                    <Typography fontSize={14} color="#FF9800">• 프로젝트 생성: 4개 ↑</Typography>
+                    <Typography fontSize={14} color="#FF9800">• 개별 이미지: 20개 ↑</Typography>
+                    <Typography fontSize={14} color="#FF9800">• 콘텐츠 수정: 하루 5회 ↑</Typography>
                   </Box>
                 </Box>
               </Box>

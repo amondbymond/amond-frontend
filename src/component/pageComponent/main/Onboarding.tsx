@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/router";
 import { Step1, Step2, Step3, Step4, Step5, Step6, Step7 } from "./OnboardingSteps";
 import LoginContext from "@/module/ContextAPI/LoginContext";
+import UsageLimitWarning from "@/component/ui/UsageLimitWarning";
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -48,6 +49,11 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   
   // Check if we're creating a new feed set from an existing brand
   const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
+  
+  // Usage limit states
+  const [showUsageWarning, setShowUsageWarning] = useState(false);
+  const [usageLimits, setUsageLimits] = useState<any>(null);
+  const [proceedWithCreation, setProceedWithCreation] = useState(false);
   
   useEffect(() => {
     // Check if we're creating a new feed set from an existing brand
@@ -184,6 +190,26 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       console.error("[Onboarding] No userInfo when saving brand!");
       setNeedLoginonfirmModal(true);
       return;
+    }
+    
+    // Check usage limits before creating project
+    if (!proceedWithCreation) {
+      try {
+        const usageResponse = await apiCall({
+          url: "/content/usage-limits",
+          method: "GET",
+        });
+        const limits = usageResponse.data.limits;
+        setUsageLimits(limits);
+        
+        // Show warning dialog
+        if (!limits.projects.canCreate || limits.projects.remaining <= 1) {
+          setShowUsageWarning(true);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to check usage limits:", error);
+      }
     }
     
     try {
@@ -519,6 +545,26 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           buttonLabel="새 창에서 열기"
           disableCloseIcon={false}
           disableOutClick={false}
+        />
+      )}
+      
+      {showUsageWarning && usageLimits && (
+        <UsageLimitWarning
+          open={showUsageWarning}
+          onClose={() => {
+            setShowUsageWarning(false);
+            setProceedWithCreation(false);
+          }}
+          onConfirm={() => {
+            setShowUsageWarning(false);
+            setProceedWithCreation(true);
+            // Retry creation after user confirms
+            saveBrandInput(router.query.autoGenerate === 'true');
+          }}
+          type="project"
+          remaining={usageLimits.projects.remaining}
+          canPerform={usageLimits.projects.canCreate}
+          userGrade={userInfo?.grade}
         />
       )}
     </Box>

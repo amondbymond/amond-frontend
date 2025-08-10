@@ -2,56 +2,43 @@ import {
   Box,
   Typography,
   Button,
-  Slider as MUISlider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   IconButton,
   useMediaQuery,
-  CardMedia,
   TextField,
-  Alert,
   CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   FormControlLabel,
-  Checkbox,
   MenuItem,
   Select,
   FormControl,
   InputLabel,
-  Grid,
   Switch,
   Divider,
   Chip,
+  Tooltip,
 } from "@mui/material";
 import { useEffect, useState, useContext } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { BodyContainer } from "@/component/ui/BodyContainer";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import WebAssetIcon from "@mui/icons-material/WebAsset";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
-import SlickSlider from "react-slick";
-import { CenterProgress, RowStack } from "@/component/ui/BoxStack";
-import Image from "next/image";
+import GridViewIcon from "@mui/icons-material/GridView";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { CenterProgress } from "@/component/ui/BoxStack";
 import { useRouter } from "next/router";
 import { apiCall, handleAPIError } from "@/module/utils/api";
 import axios from "axios";
-import { s3ImageUrl, IMAGES_PER_FEEDSET, CONTENT_TYPES, directionList } from "@/constant/commonVariable";
-import { BaseModalBox, LoadingModalWithVideo, ConfirmModal } from "@/component/ui/Modal";
-import { motion } from "framer-motion";
+import { IMAGES_PER_FEEDSET, CONTENT_TYPES } from "@/constant/commonVariable";
+import { LoadingModalWithVideo, ConfirmModal } from "@/component/ui/Modal";
 import { changeDateDot } from "@/module/utils/commonFunction";
-import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import InstagramFeedGrid from "./_parts/InstagramFeedGrid";
 import NikeFeedSetGrid from "./_parts/NikeFeedSetGrid";
-import ContentsInputSection from "./_parts/ContentsInputSection";
 import ProjectEditModal from "./_parts/ProjectEditModal";
 import ContentDetailModal from "./_parts/ContentDetailModal";
+import ProjectSettingsModal from "./_parts/ProjectSettingsModal";
 import LoginContext from "@/module/ContextAPI/LoginContext";
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // 여기서 맨 처음에 request 어차피 체크하니 여부 체크하고
 // 없으면 바로 생성 ㄲ. 맨 초기 유저들. 진입하자마자 생성하고 로딩하게 하면 될 듯~
@@ -65,9 +52,9 @@ export default function ProjectPage() {
   // 프로젝트 데이터 (브랜드/상품 정보)
   const [projectData, setProjectData] = useState<any>(null);
   const [projectEditModal, setProjectEditModal] = useState(false);
+  const [projectSettingsModal, setProjectSettingsModal] = useState(false);
   const [projectDataRefresh, setProjectDataRefresh] = useState(false);
 
-  const [isReversed, setIsReversed] = useState(false);
 
   // 콘텐츠 생성 관련 설정
   const [contentSettings, setContentSettings] = useState({
@@ -432,33 +419,48 @@ export default function ProjectPage() {
       sx={{ 
         backgroundColor: "#fff",
         minHeight: "100vh",
-        p: { xs: 2, md: 4 }
+        p: { xs: 1, md: 2 }
       }}
     >
       {projectData ? (
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            gap: { xs: 2, md: 3.5 },
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          {/* 왼쪽: 콘텐츠 스타일 설정 */}
-          <motion.div
-            style={{
-              flex: isReversed ? 7 : isUnderMd ? 12 : 5,
-              minWidth: 0,
+          {/* Header with Project Name */}
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "800px",
+              mb: 1,
+              textAlign: "center",
             }}
-            animate={{ flex: isReversed ? 7 : isUnderMd ? 12 : 5 }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
+          >
+            <Typography 
+              variant="h5" 
+              fontWeight={700}
+              sx={{ fontSize: { xs: 20, md: 24 } }}
+            >
+              {projectData.name}
+            </Typography>
+          </Box>
+
+          {/* Main Content Grid - Centered */}
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "800px",
+            }}
           >
             <Box
               sx={{
-                p: { xs: 1.5, md: 4 },
-                borderRadius: 3,
                 background: "#fff",
+                borderRadius: 3,
                 boxShadow: 1,
-                height: "100%",
+                p: { xs: 1, md: 2 },
               }}
             >
               <Box
@@ -467,214 +469,33 @@ export default function ProjectPage() {
                 justifyContent="space-between"
                 mb={2}
               >
-                <Box display="flex" alignItems="center" gap={2}>
-                  <Typography fontWeight={700} fontSize={{ xs: 18, md: 22 }}>
-                    {projectData.name}
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Typography fontWeight={700} fontSize={{ xs: 16, md: 20 }}>
+                    {changeDateDot(contentData?.contentRequestInfo?.createdAt)}{" "}
+                    생성
                   </Typography>
-                </Box>
-                <RowStack>
-                  <IconButton onClick={() => setIsReversed(!isReversed)}>
-                    <CardMedia
-                      component="img"
-                      src="/assets/icon/popup.svg"
-                      alt="팝업"
+                  
+                  {/* Settings Button */}
+                  <Tooltip title="프로젝트 설정" placement="top">
+                    <IconButton
+                      onClick={() => setProjectSettingsModal(true)}
                       sx={{
-                        width: { xs: 18, md: 21 },
-                        height: { xs: 18, md: 21 },
-                      }}
-                    />
-                  </IconButton>
-                </RowStack>
-              </Box>
-
-              {/* 제품 정보 */}
-              <Accordion
-                sx={{
-                  mb: 3,
-                  borderRadius: "8px",
-                  "&:before": { display: "none" },
-                  p: { xs: 0, md: 0.5 },
-                }}
-              >
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography fontWeight={600} fontSize={{ xs: 16, md: 18 }}>
-                    브랜드/상품 정보
-                  </Typography>
-                </AccordionSummary>
-
-                <AccordionDetails>
-                  <Box>
-                    <Box
-                      sx={{
-                        width: "100%",
-                        maxWidth: 400,
-                        mx: "auto",
-                        mb: 4,
-                        borderRadius: 3,
-                        position: "relative",
-                        "& .slick-dots": {
-                          bottom: -30,
-                        },
-                        "& .slick-slide": {
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: "400px",
-                          maxHeight: "400px",
-                          "& img": {
-                            width: "100%",
-                            height: "auto",
-                            maxHeight: "400px",
-                            objectFit: "contain",
-                            borderRadius: "12px",
-                          },
+                        border: "1px solid",
+                        borderColor: "grey.300",
+                        borderRadius: 1.5,
+                        p: 0.5,
+                        ml: 0.5,
+                        '&:hover': {
+                          borderColor: 'primary.main',
+                          bgcolor: 'primary.light',
                         },
                       }}
+                      size="small"
                     >
-                      {projectData?.imageList?.filter((img: string) => !!img)
-                        .length > 0 ? (
-                        <SlickSlider
-                          dots
-                          arrows
-                          infinite={projectData?.imageList?.length > 1}
-                          speed={500}
-                          slidesToShow={1}
-                          slidesToScroll={1}
-                          className="product-slider"
-                        >
-                          {projectData?.imageList
-                            ?.filter((img: string) => !!img)
-                            .map((img: string, idx: number) => (
-                              <Box
-                                key={idx}
-                                sx={{ position: "relative", width: "100%" }}
-                              >
-                                <img
-                                  src={`${s3ImageUrl}/${img}`}
-                                  alt={`제품 사진 ${idx + 1}`}
-                                  style={{ width: "100%", display: "block" }}
-                                />
-                              </Box>
-                            ))}
-                        </SlickSlider>
-                      ) : (
-                        <Box
-                          sx={{
-                            width: "100%",
-                            aspectRatio: "1/1",
-                            bgcolor: "grey.100",
-                            borderRadius: 3,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "grey.500",
-                            fontSize: { xs: 14, md: 16 },
-                          }}
-                        >
-                          제품 사진이 없습니다
-                        </Box>
-                      )}
-                    </Box>
-
-                    <Box sx={{ mb: 1 }}>
-                      <Typography fontWeight={700} fontSize={20}>
-                        브랜드/상품명
-                      </Typography>
-                      <Typography>{projectData.name}</Typography>
-                      <Typography fontWeight={700} mt={2}>
-                        상품 카테고리
-                      </Typography>
-                      <Typography>{projectData.category}</Typography>
-                      <Typography fontWeight={700} mt={2}>
-                        상품 URL
-                      </Typography>
-                      <Typography>{projectData.url}</Typography>
-
-                      <Typography fontWeight={700} mt={2}>
-                        SNS 운영 목적
-                      </Typography>
-                      <Typography>
-                        {projectData.reasonList.join(", ")}
-                      </Typography>
-                      <Typography fontWeight={700} mt={2}>
-                        추가 내용
-                      </Typography>
-                      <Typography>{projectData.description}</Typography>
-
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        sx={{ mt: "16px" }}
-                        onClick={() => setProjectEditModal(true)}
-                      >
-                        수정하기
-                      </Button>
-                    </Box>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-
-              <ContentsInputSection
-                content={contentSettings}
-                onChange={setContentSettings}
-                isReversed={isReversed}
-              />
-              <Button
-                fullWidth
-                sx={{
-                  mt: 1,
-                  height: { xs: 36, md: 42 },
-                  fontSize: { xs: 14, md: 16 },
-                }}
-                onClick={() => {
-                  // Initialize modal with default configurations
-                  const categoryContentTypes = CONTENT_TYPES[projectData.category as keyof typeof CONTENT_TYPES] || CONTENT_TYPES['기타'];
-                  const defaultConfigs: ImageConfig[] = [];
-                  for (let i = 0; i < 4; i++) {
-                    defaultConfigs.push({
-                      contentType: categoryContentTypes[i] || '방향성 없음',
-                      snsEvent: false,
-                      imageSize: '1:1',
-                      additionalText: ''
-                    });
-                  }
-                  setImageConfigs(defaultConfigs);
-                  setModalAdditionalInstructions("");
-                  setSelectedImageIndex(null);
-                  setShowContentGenerationModal(true);
-                }}
-                disabled={isMakingLoading}
-              >
-                {isMakingLoading ? "생성 중..." : "콘텐츠 생성하기"}
-              </Button>
-            </Box>
-          </motion.div>
-
-          {/* 오른쪽: 캘린더/피드 전환 */}
-          <motion.div
-            style={{ flex: isReversed ? 5 : 7, minWidth: 0 }}
-            animate={{ flex: isReversed ? 5 : 7 }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
-          >
-            <Box
-              sx={{
-                background: "#fff",
-                borderRadius: 3,
-                boxShadow: 1,
-                p: { xs: 1.5, md: 3 },
-                // height: "100%",
-              }}
-            >
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                mb={2}
-              >
-                <Typography fontWeight={700} fontSize={{ xs: 16, md: 20 }}>
-                  {changeDateDot(contentData?.contentRequestInfo?.createdAt)}{" "}
-                  생성
-                </Typography>
+                      <SettingsIcon sx={{ fontSize: { xs: 16, md: 18 } }} />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
 
                 <Box display="flex" gap={1}>
                   <Box
@@ -696,11 +517,11 @@ export default function ProjectPage() {
                       height: isUnderMd ? 32 : 40,
                     }}
                   >
-                    <Image
-                      src="/assets/icon/instaFeed.svg"
-                      alt="인스타 피드"
-                      width={isUnderMd ? 18 : 22}
-                      height={isUnderMd ? 18 : 22}
+                    <GridViewIcon
+                      sx={{
+                        fontSize: isUnderMd ? 18 : 22,
+                        color: viewType === "feed" ? "primary.main" : "grey.600",
+                      }}
                     />
                   </Box>
 
@@ -723,11 +544,11 @@ export default function ProjectPage() {
                       height: isUnderMd ? 32 : 40,
                     }}
                   >
-                    <Image
-                      src="/assets/icon/calender.svg"
-                      alt="캘린더"
-                      width={isUnderMd ? 18 : 22}
-                      height={isUnderMd ? 18 : 22}
+                    <CalendarMonthIcon
+                      sx={{
+                        fontSize: isUnderMd ? 18 : 22,
+                        color: viewType === "calendar" ? "primary.main" : "grey.600",
+                      }}
                     />
                   </Box>
                 </Box>
@@ -847,25 +668,94 @@ export default function ProjectPage() {
                     setContentDetailModal(true);
                   }}
                 />
-              ) : projectData?.name?.toLowerCase() === "nike" ? (
-                <NikeFeedSetGrid
-                  contentDataList={contentData?.contentDataList}
-                  onContentClick={(content) => {
-                    setSelectedContent(content);
-                    setContentDetailModal(true);
-                  }}
-                />
               ) : (
-                <InstagramFeedGrid
-                  contentDataList={contentData?.contentDataList}
-                  onContentClick={(content) => {
-                    setSelectedContent(content);
-                    setContentDetailModal(true);
+                <Box
+                  sx={{
+                    maxWidth: { xs: "100%", sm: "400px", md: "500px" },
+                    mx: "auto",
                   }}
-                />
+                >
+                  {projectData?.name?.toLowerCase() === "nike" ? (
+                    <NikeFeedSetGrid
+                      contentDataList={contentData?.contentDataList}
+                      onContentClick={(content) => {
+                        setSelectedContent(content);
+                        setContentDetailModal(true);
+                      }}
+                    />
+                  ) : (
+                    <InstagramFeedGrid
+                      contentDataList={contentData?.contentDataList}
+                      onContentClick={(content) => {
+                        setSelectedContent(content);
+                        setContentDetailModal(true);
+                      }}
+                    />
+                  )}
+                </Box>
               )}
             </Box>
-          </motion.div>
+          </Box>
+          
+          {/* Action Buttons at Bottom */}
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "800px",
+              mt: 2,
+              display: "flex",
+              gap: 2,
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                height: { xs: 44, md: 48 },
+                fontSize: { xs: 14, md: 15 },
+                fontWeight: 700,
+                minWidth: { xs: "100%", sm: 200 },
+              }}
+              onClick={() => {
+                const categoryContentTypes = CONTENT_TYPES[projectData.category as keyof typeof CONTENT_TYPES] || CONTENT_TYPES['기타'];
+                const defaultConfigs: ImageConfig[] = [];
+                for (let i = 0; i < 4; i++) {
+                  defaultConfigs.push({
+                    contentType: categoryContentTypes[i] || '방향성 없음',
+                    snsEvent: false,
+                    imageSize: '1:1',
+                    additionalText: ''
+                  });
+                }
+                setImageConfigs(defaultConfigs);
+                setModalAdditionalInstructions("");
+                setSelectedImageIndex(null);
+                setShowContentGenerationModal(true);
+              }}
+              disabled={isMakingLoading}
+            >
+              {isMakingLoading ? "생성 중..." : "콘텐츠 재생성하기"}
+            </Button>
+            
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{
+                height: { xs: 44, md: 48 },
+                fontSize: { xs: 14, md: 15 },
+                fontWeight: 600,
+                minWidth: { xs: "100%", sm: 180 },
+              }}
+              onClick={() => {
+                router.push(`/project/${projectId}/single-image`);
+              }}
+              disabled={isMakingLoading}
+            >
+              개별 이미지 생성
+            </Button>
+          </Box>
         </Box>
       ) : (
         <CenterProgress />
@@ -900,6 +790,17 @@ export default function ProjectPage() {
             ":",
             "/"
           )}
+        />
+      )}
+
+      {projectData && (
+        <ProjectSettingsModal
+          modalSwitch={projectSettingsModal}
+          setModalSwitch={setProjectSettingsModal}
+          projectData={projectData}
+          contentSettings={contentSettings}
+          setContentSettings={setContentSettings}
+          setProjectDataRefresh={setProjectDataRefresh}
         />
       )}
 

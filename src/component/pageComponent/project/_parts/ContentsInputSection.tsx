@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Chip,
-  Grid,
   Switch,
   TextField,
   Typography,
@@ -12,6 +11,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   IconButton,
+  Grid,
 } from "@mui/material";
 import MUISlider from "@mui/material/Slider";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -22,6 +22,7 @@ export default function ContentsInputSection({
   content,
   onChange,
   isReversed,
+  hideAccordion = false,
 }: {
   content: {
     trendIssueToggle: boolean;
@@ -39,6 +40,7 @@ export default function ContentsInputSection({
   };
   onChange: (content: any) => void;
   isReversed: boolean;
+  hideAccordion?: boolean;
 }) {
   const [accordionOpen, setAccordionOpen] = useState(false);
 
@@ -48,72 +50,66 @@ export default function ContentsInputSection({
       key: "trendIssue",
       toggleKey: "trendIssueToggle",
       helper:
-        "대선, 날씨, 유행 등 실시간 업데이트되는 시장 흐름을 콘텐츠에 반영하고 고객의 관심을 이끌어보세요.",
-      placeholder: "예: 최신 트렌드 키워드",
-      maxLength: 45,
+        "현재 대중에게 인기있거나 바이럴 가능성이 높은 트렌드를 활용해서 콘텐츠를 제작합니다.",
+      placeholder: "하얀 퍼, 우먼스 테일러드, 가방",
+      maxLength: 100,
     },
     {
-      label: "SNS 이벤트 포함",
+      label: "SNS 이벤트",
       key: "snsEvent",
       toggleKey: "snsEventToggle",
-      helper: "팔로워를 찐팬으로 만드는 SNS 이벤트를 콘텐츠에 포함해보세요.",
-      placeholder: "예: 인스타그램 팔로우 이벤트",
-      maxLength: 45,
+      helper:
+        "관련 인스타 계정이 진행했던 이벤트 혹은 행사를 활용해서 콘텐츠를 제작합니다.",
+      placeholder: "10% 할인, 무료체험 행사, 여름휴가 이벤트",
+      maxLength: 100,
     },
     {
-      label: "필수 키워드 포함",
+      label: "필수 키워드",
       key: "essentialKeyword",
       toggleKey: "essentialKeywordToggle",
-      helper:
-        "문구에 꼭 들어갈 핵심 키워드를 2개 이상 작성해주세요. 반점(,)을 통해 2개 이상의 키워드를 작성할 수 있습니다.",
-      placeholder: "예: 브랜드명, 해시태그 등",
-      maxLength: 45,
+      helper: "콘텐츠 제작 시 필수로 포함될 키워드를 설정합니다.",
+      placeholder: "스타일링, 브랜드명, 제품명",
+      maxLength: 100,
     },
   ];
 
   const accordionSwitchList = [
     {
-      label: "경쟁사 분석 반영",
+      label: "경쟁사",
       key: "competitor",
       toggleKey: "competitorToggle",
       helper:
-        "경쟁사 등, 연관 산업에서 반응이 좋았던 콘텐츠 형식을 제안드려요!",
-      placeholder:
-        "경쟁사 등, 연관 산업에서 반응이 좋았던 콘텐츠 형식을 제안드려요!",
-      maxLength: 250,
+        "경쟁 브랜드 혹은 상품을 알려주시면 벤치마킹해서 콘텐츠를 제작합니다.",
+      placeholder: "나이키, 자라",
+      maxLength: 100,
     },
   ];
 
+  const cycleList = ["주 1회", "주 2회", "주 3회", "주 4회", "주 5회"];
   const toneList = [
-    "신뢰감 있는",
-    "친근/다정한",
-    "위트 있는",
-    "대화하는 어조",
-    "고급스러운",
+    "캐주얼하고 친근한",
+    "전문적이고 신뢰감 있는",
+    "모던하고 세련된",
+    "재미있고 유머러스한",
+    "감성적이고 따뜻한",
+    "활기차고 에너지틱한",
+    "미니멀하고 간결한",
+    "고급스럽고 우아한",
+    "자연스럽고 편안한",
+    "독특하고 개성있는",
   ];
-  const uploadList = ["주 1회", "주 2회", "주 3회"];
-  const ratioList = ["1:1", "4:5", "9:16"];
-  // directionList is now imported from commonVariable
+  const ratioList = ["1:1", "4:5"];
 
-  const handleSwitchChange = (key: string, value: boolean) => {
-    const newValue =
-      key === "essentialKeywordToggle"
-        ? content[key.replace("Toggle", "") as keyof typeof content]
-        : value
-        ? key === "competitorToggle"
-          ? "반영"
-          : "포함"
-        : key === "competitorToggle"
-        ? "미반영"
-        : "미포함";
+  const handleSwitchChange = (toggleKey: string, value: boolean) => {
+    const key = toggleKey.replace("Toggle", "");
     onChange({
       ...content,
-      [key]: value,
-      [key.replace("Toggle", "") as keyof typeof content]: newValue,
+      [toggleKey]: value,
+      [key]: value ? content[key as keyof typeof content] : "",
     });
   };
 
-  const handleUploadChange = (value: string) => {
+  const handleCycleChange = (value: string) => {
     onChange({
       ...content,
       uploadCycle: value,
@@ -138,8 +134,6 @@ export default function ContentsInputSection({
     });
   };
 
-
-
   const handleDirectionChange = (value: string[]) => {
     onChange({
       ...content,
@@ -147,36 +141,229 @@ export default function ContentsInputSection({
     });
   };
 
+  const accordionContent = (
+    <>
+      {accordionSwitchList.map(
+        ({ label, key, toggleKey, helper, placeholder, maxLength }) => (
+          <Box key={key} display="flex" flexDirection="column" mb={1}>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>{label}</Typography>
+              <Switch
+                checked={
+                  content[toggleKey as keyof typeof content] as boolean
+                }
+                onChange={(e) =>
+                  handleSwitchChange(toggleKey, e.target.checked)
+                }
+              />
+            </Box>
+            {isReversed && (
+              <Typography
+                color={primaryColor}
+                fontSize={{ xs: 10, md: 10.5 }}
+                sx={{ mt: -0.3, mb: 0.5, opacity: 0.7 }}
+              >
+                {helper}
+              </Typography>
+            )}
+          </Box>
+        )
+      )}
+
+      <Box mb={2} mt={1.5}>
+        <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }} mb={0.8}>
+          톤앤매너
+        </Typography>
+        {!isReversed && (
+          <Typography
+            color={primaryColor}
+            fontSize={{ xs: 10, md: 10.5 }}
+            sx={{ mt: -0.3, mb: 0.8, opacity: 0.7 }}
+          >
+            최대 3개까지 선택 가능합니다.
+          </Typography>
+        )}
+
+        <Box
+          sx={{
+            border: "1px solid",
+            borderColor: "grey.200",
+            borderRadius: 1,
+            p: 1,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 0.5,
+          }}
+        >
+          {toneList.map((t) => (
+            <Chip
+              key={t}
+              label={t}
+              variant={
+                content.toneMannerList.includes(t) ? "filled" : "outlined"
+              }
+              color={
+                content.toneMannerList.includes(t) ? "primary" : "default"
+              }
+              onClick={() => {
+                if (content.toneMannerList.includes(t)) {
+                  handleToneChange(
+                    content.toneMannerList.filter((tone) => tone !== t)
+                  );
+                } else {
+                  handleToneChange([...content.toneMannerList, t]);
+                }
+              }}
+              size="small"
+              sx={{ fontSize: { xs: 9, md: 11 } }}
+            />
+          ))}
+        </Box>
+
+        {isReversed && (
+          <Typography
+            color={primaryColor}
+            fontSize={{ xs: 10, md: 10.5 }}
+            sx={{ mt: 0.5, mb: 1, opacity: 0.7 }}
+          >
+            최대 3개까지 선택 가능합니다.
+          </Typography>
+        )}
+      </Box>
+
+      <Box mb={2}>
+        <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }} mb={0.8}>
+          방향성
+        </Typography>
+        {!isReversed && (
+          <Typography
+            color={primaryColor}
+            fontSize={{ xs: 10, md: 10.5 }}
+            sx={{ mt: -0.3, mb: 0.8, opacity: 0.7 }}
+          >
+            원하는 피드 방향성을 선택해주세요!
+          </Typography>
+        )}
+
+        <Box
+          sx={{
+            border: "1px solid",
+            borderColor: "grey.200",
+            borderRadius: 1,
+            p: 1,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 0.5,
+          }}
+        >
+          {directionList.map((d) => (
+            <Chip
+              key={d}
+              label={d}
+              variant={
+                content.directionList.includes(d) ? "filled" : "outlined"
+              }
+              color={
+                content.directionList.includes(d) ? "primary" : "default"
+              }
+              onClick={() => {
+                if (content.directionList.includes(d)) {
+                  handleDirectionChange(
+                    content.directionList.filter((dir) => dir !== d)
+                  );
+                } else {
+                  handleDirectionChange([...content.directionList, d]);
+                }
+              }}
+              size="small"
+              sx={{ fontSize: { xs: 9, md: 11 } }}
+            />
+          ))}
+        </Box>
+
+        {isReversed && (
+          <Typography
+            color={primaryColor}
+            fontSize={{ xs: 10, md: 10.5 }}
+            sx={{ mt: 0.5, mb: 1, opacity: 0.7 }}
+          >
+            원하는 피드 방향성을 선택해주세요!
+          </Typography>
+        )}
+      </Box>
+
+      <Box mb={1}>
+        <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }} mb={0.8}>
+          이미지 사이즈
+        </Typography>
+
+        {isReversed && (
+          <Typography
+            color={primaryColor}
+            fontSize={{ xs: 10, md: 10.5 }}
+            sx={{ mt: 0.5, mb: 1, opacity: 0.7 }}
+          >
+            원하는 대표 인스타 콘텐츠 사이즈를 알려주세요!
+          </Typography>
+        )}
+
+        <Grid container spacing={1}>
+          {ratioList.map((r) => (
+            <Grid item xs={4} key={r}>
+              <Button
+                fullWidth
+                variant={
+                  content.imageRatio === r ? "contained" : "outlined"
+                }
+                onClick={() => handleRatioChange(r)}
+                sx={{ height: 40 }}
+              >
+                {r}
+              </Button>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </>
+  );
+
   return (
     <Box
       sx={{
-        p: { xs: 1.5, md: 2 },
-        borderRadius: 1.5,
-        border: "1px solid",
+        p: hideAccordion ? 0 : { xs: 1.5, md: 2 },
+        borderRadius: hideAccordion ? 0 : 1.5,
+        border: hideAccordion ? "none" : "1px solid",
         borderColor: "grey.200",
-        mb: { xs: 1.5, md: 2.25 },
+        mb: hideAccordion ? 0 : { xs: 1.5, md: 2.25 },
       }}
     >
-      <RowStack
-        justifyContent="space-between"
-        onClick={() => setAccordionOpen(!accordionOpen)}
-        mb={2}
-        sx={{ cursor: "pointer" }}
-      >
-        <Typography fontWeight={600} fontSize={{ xs: 12, md: 13.5 }}>
-          콘텐츠 스타일 설정
-        </Typography>
+      {!hideAccordion && (
+        <RowStack
+          justifyContent="space-between"
+          onClick={() => setAccordionOpen(!accordionOpen)}
+          mb={2}
+          sx={{ cursor: "pointer" }}
+        >
+          <Typography fontWeight={600} fontSize={{ xs: 12, md: 13.5 }}>
+            콘텐츠 스타일 설정
+          </Typography>
 
-        <ExpandMoreIcon
-          sx={{
-            color: "rgba(0, 0, 0, 0.54)",
-            fontSize: 18,
-            // 회전 애니메이션
-            transition: "transform 0.15s ease-in-out",
-            transform: accordionOpen ? "rotate(180deg)" : "rotate(0deg)",
-          }}
-        />
-      </RowStack>
+          <ExpandMoreIcon
+            sx={{
+              color: "rgba(0, 0, 0, 0.54)",
+              fontSize: 18,
+              // 회전 애니메이션
+              transition: "transform 0.15s ease-in-out",
+              transform: accordionOpen ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+          />
+        </RowStack>
+      )}
+      
       {switchList.map(
         ({ label, key, toggleKey, helper, placeholder, maxLength }) => (
           <Box key={key} display="flex" flexDirection="column" mb={1}>
@@ -232,175 +419,41 @@ export default function ContentsInputSection({
         )
       )}
 
-      <Accordion
-        expanded={accordionOpen}
-        onChange={() => setAccordionOpen(!accordionOpen)}
-        sx={{
-          mt: "0px !important",
-          py: 0,
-          borderRadius: 0,
-          borderColor: "grey.200",
-          boxShadow: "none",
-          "&:before": { display: "none" },
-        }}
-      >
-        <AccordionSummary
-          // expandIcon={<ExpandMoreIcon />}
+      {/* Show accordion content based on hideAccordion prop */}
+      {hideAccordion ? (
+        accordionContent
+      ) : (
+        <Accordion
+          expanded={accordionOpen}
+          onChange={() => setAccordionOpen(!accordionOpen)}
           sx={{
-            px: 0,
+            mt: "0px !important",
             py: 0,
-            "& .MuiAccordionSummary-content": {
-              margin: "0px 0",
-            },
-            "& .MuiAccordionSummary-content.Mui-expanded": {
-              margin: "0px 0",
-            },
-            minHeight: "0px !important",
+            borderRadius: 0,
+            borderColor: "grey.200",
+            boxShadow: "none",
+            "&:before": { display: "none" },
           }}
         >
-          {/* <Typography fontWeight={600} fontSize={{ xs: 15, md: 17 }}>
-            + 상세 설정
-          </Typography> */}
-        </AccordionSummary>
-        <AccordionDetails sx={{ px: 0, py: 0 }}>
-          {accordionSwitchList.map(
-            ({ label, key, toggleKey, helper, placeholder, maxLength }) => (
-              <Box key={key} display="flex" flexDirection="column" mb={1}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>{label}</Typography>
-                  <Switch
-                    checked={
-                      content[toggleKey as keyof typeof content] as boolean
-                    }
-                    onChange={(e) =>
-                      handleSwitchChange(toggleKey, e.target.checked)
-                    }
-                  />
-                </Box>
-                {isReversed && (
-                  <Typography
-                    color={primaryColor}
-                    fontSize={{ xs: 10, md: 10.5 }}
-                    sx={{ mt: -0.3, mb: 0.5, opacity: 0.7 }}
-                  >
-                    {helper}
-                  </Typography>
-                )}
-              </Box>
-            )
-          )}
-
-          <Box mb={2} mt={1.5}>
-            <Typography fontWeight={600} mb={1} fontSize={{ xs: 10.5, md: 12 }}>
-              업로드 주기
-            </Typography>
-            <Grid container spacing={1}>
-              {uploadList.map((u) => (
-                <Grid size={{ xs: 4 }} key={u}>
-                  <Button
-                    fullWidth
-                    variant={
-                      content.uploadCycle === u ? "contained" : "outlined"
-                    }
-                    onClick={() => handleUploadChange(u)}
-                    disabled={u !== "주 1회"}
-                    sx={{ 
-                      height: 30,
-                      opacity: u !== "주 1회" ? 0.5 : 1,
-                      cursor: u !== "주 1회" ? "not-allowed" : "pointer"
-                    }}
-                  >
-                    {u}
-                  </Button>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-
-          <Box mb={2}>
-            <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>톤앤매너</Typography>
-
-            {isReversed && (
-              <Typography
-                color={primaryColor}
-                fontSize={{ xs: 10, md: 10.5 }}
-                sx={{ mt: 0.5, mb: 1, opacity: 0.7 }}
-              >
-                어떤 톤으로 고객들과 소통하시길 원하시나요? 최대 3가지를
-                선택해주세요.
-              </Typography>
-            )}
-
-            <Grid container spacing={1}>
-              {toneList.map((t) => (
-                <Grid size={{ xs: 6 }} key={t}>
-                  <Chip
-                    label={t}
-                    clickable
-                    variant="outlined"
-                    onClick={() =>
-                      handleToneChange(
-                        content.toneMannerList.includes(t)
-                          ? content.toneMannerList.filter((x) => x !== t)
-                          : [...content.toneMannerList, t]
-                      )
-                    }
-                    sx={{
-                      width: "100%",
-                      fontWeight: 500,
-                      fontSize: 10.5,
-                      borderColor: content.toneMannerList.includes(t)
-                        ? "primary.main"
-                        : "grey.300",
-                      "&:hover": {
-                        borderColor: "primary.main",
-                        backgroundColor: "grey.50",
-                      },
-                    }}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-
-
-
-          <Box mb={2}>
-            <Typography fontWeight={600} fontSize={{ xs: 10.5, md: 12 }}>이미지 비율</Typography>
-
-            {isReversed && (
-              <Typography
-                color={primaryColor}
-                fontSize={{ xs: 10, md: 10.5 }}
-                sx={{ mt: 0.5, mb: 1, opacity: 0.7 }}
-              >
-                원하는 대표 인스타 콘텐츠 사이즈를 알려주세요!
-              </Typography>
-            )}
-
-            <Grid container spacing={1}>
-              {ratioList.map((r) => (
-                <Grid size={{ xs: 4 }} key={r}>
-                  <Button
-                    fullWidth
-                    variant={
-                      content.imageRatio === r ? "contained" : "outlined"
-                    }
-                    onClick={() => handleRatioChange(r)}
-                    sx={{ height: 40 }}
-                  >
-                    {r}
-                  </Button>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </AccordionDetails>
-      </Accordion>
+          <AccordionSummary
+            sx={{
+              px: 0,
+              py: 0,
+              "& .MuiAccordionSummary-content": {
+                margin: "0px 0",
+              },
+              "& .MuiAccordionSummary-content.Mui-expanded": {
+                margin: "0px 0",
+              },
+              minHeight: "0px !important",
+            }}
+          >
+          </AccordionSummary>
+          <AccordionDetails sx={{ px: 0, py: 0 }}>
+            {accordionContent}
+          </AccordionDetails>
+        </Accordion>
+      )}
     </Box>
   );
 }
