@@ -70,7 +70,7 @@ export default function UsageLimitWarning({
                 {config.resource} 사용 가능 횟수: {remaining}회
               </Typography>
               <Typography fontSize={14}>
-                {type === 'content_edit' && gradeConfig.isDaily 
+                {type === 'content_edit' && typeof gradeConfig === 'object' && 'isDaily' in gradeConfig && gradeConfig.isDaily 
                   ? `오늘 ${remaining}회 더 수정할 수 있습니다.`
                   : `${remaining}개의 ${config.resource}를 더 생성할 수 있습니다.`}
               </Typography>
@@ -93,19 +93,19 @@ export default function UsageLimitWarning({
               <Typography fontSize={14}>
                 {type === 'content_edit' && gradeKey === 'basic'
                   ? '베이직 플랜에서는 콘텐츠 수정이 불가능합니다.'
-                  : type === 'content_edit' && gradeConfig.isDaily
+                  : type === 'content_edit' && typeof gradeConfig === 'object' && 'isDaily' in gradeConfig && gradeConfig.isDaily
                   ? '오늘의 수정 한도를 모두 사용하셨습니다. 내일 다시 시도해주세요.'
                   : `더 이상 ${config.resource}를 생성할 수 없습니다.`}
               </Typography>
             </Alert>
 
-            {gradeConfig.upgrade && (
+            {typeof gradeConfig === 'object' && 'upgrade' in gradeConfig && gradeConfig.upgrade && (
               <Box sx={{ p: 3, bgcolor: '#FFF3E0', borderRadius: 2, textAlign: 'center' }}>
                 <Typography fontWeight={600} mb={2}>
-                  {gradeConfig.upgrade === 'pro' ? '프로' : '비즈니스'} 플랜으로 업그레이드하세요!
+                  {typeof gradeConfig === 'object' && 'upgrade' in gradeConfig && gradeConfig.upgrade === 'pro' ? '프로' : '비즈니스'} 플랜으로 업그레이드하세요!
                 </Typography>
                 <Typography fontSize={14} color="grey.600" mb={2}>
-                  {gradeConfig.upgrade === 'pro' 
+                  {typeof gradeConfig === 'object' && 'upgrade' in gradeConfig && gradeConfig.upgrade === 'pro' 
                     ? type === 'project' ? '프로젝트를 4개까지 생성할 수 있습니다.'
                     : type === 'single_image' ? '개별 이미지를 20개까지 생성할 수 있습니다.'
                     : '하루에 5회까지 콘텐츠를 수정할 수 있습니다.'

@@ -467,7 +467,7 @@ export default function SingleImageGenerationPage() {
                         >
                           <CardContent sx={{ p: 0, height: '100%', '&:last-child': { pb: 0 } }}>
                             <Box
-                              ref={(el) => { cardRefs.current[actualIndex] = el; }}
+                              ref={(el: HTMLDivElement | null) => { cardRefs.current[actualIndex] = el; }}
                               sx={{ 
                                 p: 2, 
                                 height: '100%', 

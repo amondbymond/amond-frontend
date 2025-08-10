@@ -52,7 +52,7 @@ interface ProjectSettingsModalProps {
   projectData: any;
   contentSettings: any;
   setContentSettings: (value: any) => void;
-  setProjectDataRefresh: (value: boolean) => void;
+  setProjectDataRefresh: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export default function ProjectSettingsModal({
@@ -493,7 +493,7 @@ export default function ProjectSettingsModal({
               </Typography>
               <Grid container spacing={1}>
                 {reasonList.map((reason) => (
-                  <Grid item xs={6} key={reason}>
+                  <Grid key={reason} size={{ xs: 6 }}>
                     <Box
                       onClick={() => {
                         const newReasonList = editData.reasonList.includes(reason)

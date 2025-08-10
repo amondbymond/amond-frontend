@@ -313,7 +313,7 @@ export default function ContentsInputSection({
 
         <Grid container spacing={1}>
           {ratioList.map((r) => (
-            <Grid item xs={4} key={r}>
+            <Grid key={r} size={{ xs: 4 }}>
               <Button
                 fullWidth
                 variant={
