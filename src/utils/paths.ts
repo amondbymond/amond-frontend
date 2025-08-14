@@ -9,7 +9,7 @@ export const withBasePath = (path: string) => {
     return path;
   }
   
-  // Add basePath
-  const basePath = getBasePath();
-  return path.startsWith('/') ? `${basePath}${path}` : `${basePath}/${path}`;
+  // Next.js automatically handles basePath, so we just return the path as-is
+  // The basePath in next.config.js will be automatically prepended
+  return path;
 };
