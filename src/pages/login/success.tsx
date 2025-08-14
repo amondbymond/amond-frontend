@@ -1,6 +1,6 @@
 import LoginSuccessPage from "@/component/pageComponent/login/success";
 import Head from "next/head";
-
+import { withBasePath } from "@/utils/paths";
 export default function LoginSuccess() {
   return (
     <>
@@ -8,7 +8,7 @@ export default function LoginSuccess() {
         <title>로그인 성공 | amond</title>
         <meta name="description" content="로그인 성공" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href={withBasePath("/favicon.ico")} />
       </Head>
       <main>
         <LoginSuccessPage />

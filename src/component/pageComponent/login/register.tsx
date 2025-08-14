@@ -17,6 +17,7 @@ import { ConfirmModal } from "@/component/ui/Modal";
 import axios from "axios";
 import HidePasswordTextField from "@/component/ui/HidePassTextField";
 import Link from "next/link";
+import { withBasePath } from "@/utils/paths";
 
 type CheckInputKeyType =
   | "all"
@@ -324,7 +325,7 @@ export default function RegisterPage() {
               <CardMedia
                 component="img"
                 alt="kakao icon"
-                src="/assets/icon/kakaoLogin.png"
+                src={withBasePath("/assets/icon/kakaoLogin.png")}
                 sx={{
                   width: "20px",
                   height: "20px",
@@ -349,7 +350,7 @@ export default function RegisterPage() {
               <CardMedia
                 component="img"
                 alt="google icon"
-                src="/assets/icon/googleLogin.png"
+                src={withBasePath("/assets/icon/googleLogin.png")}
                 sx={{
                   width: "20px",
                   height: "20px",
