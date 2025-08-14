@@ -747,13 +747,16 @@ export default function ProjectPage() {
                 fontSize: { xs: 14, md: 15 },
                 fontWeight: 600,
                 minWidth: { xs: "100%", sm: 180 },
+                opacity: 0.5,
+                cursor: 'not-allowed',
               }}
               onClick={() => {
-                router.push(`/project/${projectId}/single-image`);
+                // Temporarily disabled
+                alert('개별 이미지 생성 기능은 현재 준비 중입니다.');
               }}
-              disabled={isMakingLoading}
+              disabled={true}
             >
-              개별 이미지 생성
+              개별 이미지 생성 (준비 중)
             </Button>
           </Box>
         </Box>

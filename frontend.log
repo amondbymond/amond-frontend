@@ -1,0 +1,15 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+  ▲ Next.js 14.2.22
+  - Local:        http://localhost:3001
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 3.2s
+ ○ Compiling /404 ...
+ ✓ Compiled /404 in 1030ms (1346 modules)
+ GET /billing-popup.html 404 in 1322ms
+ GET /test-billing-complete.html 404 in 46ms

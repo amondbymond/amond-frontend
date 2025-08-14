@@ -18,6 +18,7 @@ import {
 } from "./styled/StyledButton";
 import { CenterBox } from "./styled/StyledBox";
 import { TitleSub22 } from "./styled/StyledTypography";
+import { withBasePath } from "@/utils/paths";
 import { primaryColor } from "@/constant/styles/styleTheme";
 
 /* 모달 기본 **/
@@ -260,7 +261,7 @@ export function ConfirmModal({
               <CardMedia
                 component="img"
                 onClick={modalClose}
-                src="/assets/icon/close.svg"
+                src={withBasePath("/assets/icon/close.svg")}
                 alt="close"
                 width={24}
                 height={24}
@@ -312,7 +313,7 @@ export function LoadingModalWithVideo({
         }}
       >
         <video
-          src="/assets/video/loading.mp4"
+          src={withBasePath("/assets/video/loading.mp4")}
           autoPlay
           loop
           muted

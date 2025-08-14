@@ -50,10 +50,10 @@ export const handleAPIError = (e: any, failMessage: string) => {
     console.error("API Error:", e.response.data);
     // 로그인이 필요한 경우는 alert 없이 바로 로그인 페이지로 이동
     if (e?.response?.data?.message.includes("로그인")) {
-      window.location.href = "/login";
+      window.location.href = "/service/login";
     } else if (e?.response?.data?.message === "관리자가 아닙니다") {
       alert("접근 권한이 없습니다.");
-      window.location.href = "/";
+      window.location.href = "/service";
     } else {
       alert(`${e.response.data.message}`);
     }

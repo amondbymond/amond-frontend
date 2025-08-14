@@ -27,6 +27,7 @@ import HidePasswordTextField from "../ui/HidePassTextField";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PersonIcon from "@mui/icons-material/Person";
 import UserSidebar from "../ui/UserSidebar";
+import { withBasePath } from "@/utils/paths";
 
 export default function NavBar() {
   const router = useRouter();
@@ -114,7 +115,7 @@ export default function NavBar() {
                   }}>
                     <CardMedia
                       component="img"
-                      image="/logoHorizontalWhite.png"
+                      image={withBasePath("/logoHorizontalWhite.png")}
                       alt="company logo"
                       sx={{
                         width: { xs: "73px", md: "98px" },

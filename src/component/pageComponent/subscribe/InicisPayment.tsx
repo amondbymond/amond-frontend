@@ -147,7 +147,7 @@ export default function InicisPayment({
         oid: generateOrderId(),
         price: planPrice.toString(), // TEST ONLY - Change back to: planPrice.toString()
         timestamp: Date.now().toString(),
-        goodname: `${planName} 정기결제`,
+        goodname: `${planName} 30일 이용권`,
         buyername: buyerName,
         buyertel: formatPhoneNumber(buyerTel),
         buyeremail: buyerEmail,
@@ -158,6 +158,124 @@ export default function InicisPayment({
       // 서버에서 해시값 생성
       console.log('Sending order data:', orderData);
       const hashes = await generateHashes(orderData);
+      
+      // Check if this requires BILLAUTH for recurring payments
+      if (hashes.requiresBillAuth) {
+        console.log('Redirecting to BILLAUTH flow for recurring payments');
+        // Get BILLAUTH registration data
+        // Convert Korean plan names to English for API
+        let planType = planName.toLowerCase();
+        if (planName === '프로') planType = 'pro';
+        else if (planName === '비즈니스') planType = 'business';
+        else if (planName === '프리미엄') planType = 'premium';
+        
+        console.log('Requesting BILLAUTH data for plan:', planType);
+        const billAuthResponse = await apiCall({
+          url: `/inicis-webstandard/billing-auth?plan=${planType}`,
+          method: 'GET'
+        });
+        
+        console.log('BILLAUTH response:', billAuthResponse);
+        
+        if (billAuthResponse.data && billAuthResponse.data.data && billAuthResponse.data.data.paymentData) {
+          const paymentData = billAuthResponse.data.data.paymentData;
+          const jsUrl = billAuthResponse.data.data.jsUrl || INICIS_CONFIG.url;
+          console.log('BILLAUTH payment data received:', paymentData);
+          console.log('BILLAUTH JS URL:', jsUrl);
+          
+          // Load INICIS script if needed
+          const loadInicisScript = () => {
+            return new Promise((resolve, reject) => {
+              if (window.INIStdPay) {
+                resolve(true);
+                return;
+              }
+              
+              const script = document.createElement('script');
+              script.src = jsUrl;
+              script.charset = 'UTF-8';
+              script.onload = () => {
+                console.log('INICIS script loaded successfully');
+                resolve(true);
+              };
+              script.onerror = () => {
+                console.error('Failed to load INICIS script');
+                reject(new Error('INICIS 스크립트 로드 실패'));
+              };
+              document.head.appendChild(script);
+            });
+          };
+          
+          // Ensure INICIS JS is loaded before proceeding
+          try {
+            await loadInicisScript();
+          } catch (error) {
+            throw new Error('INICIS 결제 모듈을 로드할 수 없습니다.');
+          }
+          
+          // Create form for BILLAUTH
+          const form = document.createElement('form');
+          form.id = 'inicis-billauth-form';
+          form.name = 'inicis-billauth-form';
+          form.method = 'POST';
+          form.action = '';  // Important: empty action to prevent default submission
+          form.acceptCharset = 'UTF-8';
+          form.style.display = 'none';
+          
+          // Log each parameter being added
+          Object.entries(paymentData).forEach(([key, value]) => {
+            console.log(`Adding form field: ${key} = ${value}`);
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = String(value);
+            form.appendChild(input);
+          });
+          
+          // Append form to body
+          document.body.appendChild(form);
+          console.log('BILLAUTH form created and added to DOM');
+          
+          // Call INICIS pay immediately after form is in DOM
+          setTimeout(() => {
+            try {
+              if (window.INIStdPay && typeof window.INIStdPay.pay === 'function') {
+                console.log('Calling INIStdPay.pay with form ID: inicis-billauth-form');
+                
+                // Try to detect popup blockers
+                const testPopup = window.open('', '_blank', 'width=1,height=1');
+                if (testPopup) {
+                  testPopup.close();
+                  
+                  // Popup allowed, proceed with payment
+                  window.INIStdPay.pay('inicis-billauth-form');
+                  console.log('INICIS payment window should now be open');
+                  
+                  // Close the modal after initiating payment
+                  onClose();
+                } else {
+                  // Popup blocked
+                  throw new Error('팝업이 차단되었습니다. 브라우저의 팝업 차단을 해제해주세요.');
+                }
+              } else {
+                throw new Error('INIStdPay.pay function not available');
+              }
+            } catch (error: any) {
+              console.error('INICIS BILLAUTH error:', error);
+              setError(error.message || '카드 등록 창 호출 중 오류가 발생했습니다.');
+              // Clean up form on error
+              if (document.body.contains(form)) {
+                document.body.removeChild(form);
+              }
+            }
+          }, 100); // Small delay to ensure DOM is ready
+          
+          return; // Exit early - BILLAUTH flow will handle the rest
+        } else {
+          console.error('BILLAUTH response missing payment data:', billAuthResponse);
+          throw new Error('BILLAUTH 결제 데이터를 받지 못했습니다.');
+        }
+      }
 
       const paymentRequest: PaymentRequest = {
         version: INICIS_CONFIG.version,
@@ -177,8 +295,8 @@ export default function InicisPayment({
         buyername: orderData.buyername,
         buyertel: orderData.buyertel,
         buyeremail: orderData.buyeremail,
-        returnUrl: `${window.location.origin}/payment/inicis-return`,
-        closeUrl: `${window.location.origin}/payment/close`,
+        returnUrl: `${window.location.origin}/service/payment/inicis-return`,
+        closeUrl: `${window.location.origin}/service/payment/close`,
         acceptmethod: 'HPP(1):below1000:va_receipt:centerCd(Y)'
       };
 

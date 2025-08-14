@@ -6,6 +6,7 @@ import InicisPayment from "@/component/pageComponent/subscribe/InicisPayment";
 import UnifiedButton from "@/component/ui/UnifiedButton";
 import ContactMakerModal from "@/component/ui/ContactMakerModal";
 import LoginContext from "@/module/ContextAPI/LoginContext";
+import { withBasePath } from "@/utils/paths";
 
 type MuiButtonColor = 'primary' | 'secondary' | 'inherit' | 'success' | 'error' | 'info' | 'warning';
 
@@ -25,10 +26,11 @@ const plans = [
   },
   {
     name: "프로",
-    description: "처음 아몬드를 접하고 경험하는 분들에게 추천해요",
-    price: "9,900원/월",
+    description: "더 많은 콘텐츠를 제작하고 싶은 분들에게 추천해요",
+    price: "9,900원 (30일)",
     highlight: "구매하기",
     highlights: [
+      { label: "30일간 이용 가능", value: "✓" },
       { label: "월 콘텐츠 발행 횟수 (그리드)", value: "4세트" },
       { label: "콘텐츠별 수정 횟수", value: "3회" },
       { label: "기획도 생성", value: "4세트" },
@@ -78,7 +80,7 @@ function PlanButton({ plan, onOrangeClick, currentPlan, membershipStatus, onMana
     router.push("/project");
   };
   
-  // 프로 플랜이고 현재 프로 구독 중인 경우 (활성 상태)
+  // 프로 플랜이고 현재 프로 이용 중인 경우 (활성 상태)
   if (plan.name === "프로" && currentPlan === "pro" && membershipStatus === "active") {
     return (
       <UnifiedButton
@@ -87,12 +89,12 @@ function PlanButton({ plan, onOrangeClick, currentPlan, membershipStatus, onMana
         sx={{ mb: 2, bgcolor: "#4CAF50", borderColor: "#4CAF50", '&:hover': { bgcolor: '#45a049', borderColor: '#45a049' } }}
         onClick={onManageClick}
       >
-        구독 관리
+        이용 중 (프로필에서 확인)
       </UnifiedButton>
     );
   }
   
-  // 프로 플랜이고 구독이 취소된 경우 - 다시 구독 가능
+  // 프로 플랜이고 이용권이 만료된 경우 - 다시 구매 가능
   if (plan.name === "프로" && currentPlan === "pro" && membershipStatus === "cancelled") {
     return (
       <UnifiedButton
@@ -101,7 +103,7 @@ function PlanButton({ plan, onOrangeClick, currentPlan, membershipStatus, onMana
         sx={{ mb: 2 }}
         onClick={onOrangeClick}
       >
-        다시 구독하기
+        다시 구매하기
       </UnifiedButton>
     );
   }
@@ -172,13 +174,13 @@ function ProTrialModal({ open, onClose }: { open: boolean; onClose: () => void }
         }}
       >
         <Box sx={{ mb: 1, display: 'flex', justifyContent: 'flex-start' }}>
-          <img src="/assets/arrow-up.png" alt="업그레이드 화살표" style={{ width: 40, height: 'auto' }} />
+          <img src={withBasePath("/assets/arrow-up.png")} alt="업그레이드 화살표" style={{ width: 40, height: 'auto' }} />
         </Box>
         <Typography fontWeight={700} fontSize={28} mb={1}>
-          프로 요금제로 업그레이드
+          프로 30일 이용권 구매
         </Typography>
         <Typography color="grey.600" fontSize={16} mb={3}>
-          더 많은 콘텐츠를 편하게 제작하고, AI로 마케팅을 자동화 하세요.
+          30일간 더 많은 콘텐츠를 편하게 제작하고, AI로 마케팅을 자동화 하세요.
         </Typography>
         <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
           <TextField 
@@ -266,36 +268,24 @@ function ProTrialModal({ open, onClose }: { open: boolean; onClose: () => void }
         ) : (
           <>
             <Typography fontWeight={700} mb={1}>
-              청구 옵션
+              결제 정보
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox 
-                    checked={billingOption === 'monthly'}
-                    onChange={() => setBillingOption('monthly')}
-                    sx={{
-                      color: '#FFA726',
-                      '&.Mui-checked': {
-                        color: '#FFA726',
-                      },
-                    }}
-                  />
-                }
-                label={
-                  <Typography fontWeight={500} fontSize={15}>
-                    월간 결제 <b>₩ 9,900원 / 월</b>
-                  </Typography>
-                }
-                sx={{
-                  border: "2px solid #FFA726",
-                  borderRadius: 2,
-                  px: 2,
-                  py: 1,
-                  m: 0,
-                  bgcolor: '#FFF3E0'
-                }}
-              />
+            <Box sx={{ 
+              border: "2px solid #FFA726", 
+              borderRadius: 2, 
+              p: 2, 
+              mb: 3,
+              bgcolor: '#FFF3E0'
+            }}>
+              <Typography fontWeight={600} fontSize={15} mb={1}>
+                프로 30일 이용권
+              </Typography>
+              <Typography fontSize={14} color="grey.700" mb={0.5}>
+                결제일로부터 30일간 이용 가능
+              </Typography>
+              <Typography fontSize={14} color="grey.700" fontWeight={600}>
+                결제금액: ₩ 9,900원 (일회성 결제)
+              </Typography>
             </Box>
           </>
         )}
@@ -320,8 +310,9 @@ function ProTrialModal({ open, onClose }: { open: boolean; onClose: () => void }
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 2 }}>
           <Box>
             <Typography fontWeight={700} fontSize={22}>
-              ₩ 9,900원 / 월
+              ₩ 9,900원
             </Typography>
+           
             <UnifiedButton 
               variant="white" 
               sx={{ mt: 1, fontSize: 14 }} 
@@ -354,7 +345,7 @@ function ProTrialModal({ open, onClose }: { open: boolean; onClose: () => void }
                 }
               }}
             >
-              {paymentMethod === 'bank' ? '무통장 입금 신청' : '프로 요금제로 업그레이드'}
+              {paymentMethod === 'bank' ? '무통장 입금 신청' : '프로 30일 이용권 구매'}
             </UnifiedButton>
           </Box>
         </Box>
@@ -412,8 +403,8 @@ export default function SubscribePage() {
     <Box sx={{ bgcolor: "#FFF3E0", minHeight: "100vh", pb: 4.5 }}>
       <ProTrialModal open={proModalOpen} onClose={() => setProModalOpen(false)} />
       <Box sx={{ maxWidth: 1200, mx: "auto", pt: 6, px: { xs: 2, md: 4 } }}>
-        {/* 현재 구독 상태 표시 */}
-        {currentPlan === 'pro' && membershipStatus === 'active' && (
+        {/* 현재 프로 이용 상태 표시 */}
+        {currentPlan === 'pro' && membershipStatus === 'active' && userInfo?.membershipEndDate && (
           <Box sx={{ 
             mb: 3,
             mx: { xs: 0, md: '5%', lg: '8%' }
@@ -429,20 +420,20 @@ export default function SubscribePage() {
             }}>
             <Box>
               <Typography fontSize={15} fontWeight={700} mb={0.75}>
-                🎉 현재 프로 멤버십을 이용 중입니다!
+                🎉 현재 프로 이용권을 사용 중입니다!
               </Typography>
               <Typography color="grey.600">
-                매월 더 많은 콘텐츠를 제작하고 편집할 수 있습니다.
+                {new Date(userInfo.membershipEndDate).toLocaleDateString('ko-KR')}까지 이용 가능합니다.
               </Typography>
             </Box>
             <UnifiedButton variant="colored" onClick={handleManageSubscription}>
-              구독 관리
+              프로필에서 확인
             </UnifiedButton>
             </Box>
           </Box>
         )}
         
-        {/* 취소된 구독 상태 표시 */}
+        {/* 만료된 이용권 상태 표시 */}
         {currentPlan === 'pro' && membershipStatus === 'cancelled' && (
           <Box sx={{ 
             mb: 3,
@@ -459,10 +450,10 @@ export default function SubscribePage() {
             }}>
             <Box>
               <Typography fontSize={15} fontWeight={700} mb={0.75} color="#FF9800">
-                구독이 취소되었습니다
+                이용권이 만료되었습니다
               </Typography>
               <Typography color="grey.600">
-                현재 결제 기간이 끝나면 베이직 플랜으로 변경됩니다. 다시 구독하시면 프로 혜택을 계속 이용하실 수 있습니다.
+                프로 이용권을 다시 구매하시면 더 많은 기능을 이용하실 수 있습니다.
               </Typography>
             </Box>
             <UnifiedButton variant="colored" onClick={handleManageSubscription}>
@@ -525,7 +516,7 @@ export default function SubscribePage() {
                       fontSize: 10,
                     }}
                   >
-                    현재 이용 중
+                    이용 중
                   </Box>
                 )}
                 {currentPlan === 'pro' && plan.name === '프로' && membershipStatus === 'cancelled' && (
@@ -543,7 +534,7 @@ export default function SubscribePage() {
                       fontSize: 10,
                     }}
                   >
-                    구독 취소됨
+                    이용 만료
                   </Box>
                 )}
                 <Typography fontWeight={700} fontSize={21} mb={1} align="left">

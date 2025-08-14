@@ -308,6 +308,37 @@ export default function SingleImageGenerationPage() {
 
   return (
     <BodyContainer>
+      {/* Temporary disabled overlay */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Typography variant="h4" sx={{ mb: 2, fontWeight: 700 }}>
+          개별 이미지 생성 기능 준비 중
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
+          더 나은 서비스를 위해 업데이트 중입니다.
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => router.push(`/project/${projectId}`)}
+          sx={{ backgroundColor: '#FFA726', '&:hover': { backgroundColor: '#FF9800' } }}
+        >
+          프로젝트로 돌아가기
+        </Button>
+      </Box>
+      
       <Container maxWidth="lg" sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>

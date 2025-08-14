@@ -5,6 +5,7 @@ import {
   TextFieldProps,
 } from "@mui/material";
 import { useState, forwardRef } from "react";
+import { withBasePath } from "@/utils/paths";
 
 /** 비밀번호를 숨기기/가리기를 위한 TextField */
 export const HidePasswordTextField = forwardRef<
@@ -39,8 +40,8 @@ export const HidePasswordTextField = forwardRef<
               component="img"
               src={
                 isHide
-                  ? "/assets/icon/eyeClose.svg"
-                  : "/assets/icon/eyeOpen.svg"
+                  ? withBasePath("/assets/icon/eyeClose.svg")
+                  : withBasePath("/assets/icon/eyeOpen.svg")
               }
               sx={{ width: "24px", height: "24px" }}
             />

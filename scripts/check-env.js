@@ -22,3 +22,4 @@ if (missingVars.length > 0) {
 // Log current environment for debugging
 console.log('Current NODE_ENV:', process.env.NODE_ENV);
 console.log('Current NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL ? 'Set' : 'Not set');
+

@@ -7,6 +7,7 @@ import { default as Onboarding } from "./Onboarding";
 import { useRouter } from "next/router";
 import LoginContext from "@/module/ContextAPI/LoginContext";
 import { ConfirmModal } from "@/component/ui/Modal";
+import { withBasePath } from "@/utils/paths";
 
 export default function MainPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -122,7 +123,7 @@ function StartSection({
         }}
       >
         <video
-          src="/assets/video/intro.mp4"
+          src={withBasePath("/assets/video/intro.mp4")}
           playsInline
           muted
           autoPlay

@@ -38,6 +38,7 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import Image from "next/image";
+import { withBasePath } from "@/utils/paths";
 import { useRouter } from "next/router";
 import LoginContext from "@/module/ContextAPI/LoginContext";
 import { apiCall, handleAPIError } from "@/module/utils/api";
@@ -701,8 +702,8 @@ export default function ProjectSessionSidebar({
                 },
               }}
             >
-              <Image
-                src="/logoHorizontal.png"
+              <img
+                src={withBasePath("/logoHorizontal.png")}
                 alt="amond"
                 width={73}
                 height={18}

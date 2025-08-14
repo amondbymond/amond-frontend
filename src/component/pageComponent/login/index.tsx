@@ -18,6 +18,7 @@ import { BodyContainer } from "@/component/ui/BodyContainer";
 import { Divider, RowStack } from "@/component/ui/BoxStack";
 import { primaryColor } from "@/constant/styles/styleTheme";
 import HidePasswordTextField from "@/component/ui/HidePassTextField";
+import { withBasePath } from "@/utils/paths";
 import { apiCall, handleAPIError } from "@/module/utils/api";
 
 export default function LoginPage() {
@@ -281,7 +282,7 @@ export default function LoginPage() {
               <CardMedia
                 component="img"
                 alt="kakao icon"
-                src="/assets/icon/kakaoLogin.png"
+                src={withBasePath("/assets/icon/kakaoLogin.png")}
                 sx={{
                   width: "15px",
                   height: "15px",
@@ -306,7 +307,7 @@ export default function LoginPage() {
               <CardMedia
                 component="img"
                 alt="google icon"
-                src="/assets/icon/googleLogin.png"
+                src={withBasePath("/assets/icon/googleLogin.png")}
                 sx={{
                   width: "15px",
                   height: "15px",

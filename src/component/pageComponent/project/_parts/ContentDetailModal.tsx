@@ -18,6 +18,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DownloadIcon from "@mui/icons-material/Download";
 import UsageLimitWarning from "@/component/ui/UsageLimitWarning";
 import LoginContext from "@/module/ContextAPI/LoginContext";
+import { withBasePath } from "@/utils/paths";
 
 export default function ContentDetailModal({
   modalSwitch,
@@ -315,7 +316,7 @@ export default function ContentDetailModal({
           <RowStack spacing="6px" sx={{ mb: { xs: "8px", md: "12px" } }}>
             <CardMedia
               component="img"
-              src="/logoSymbol.png"
+              src={withBasePath("/logoSymbol.png")}
               sx={{
                 width: { xs: "20px", md: "24px" },
                 height: { xs: "20px", md: "24px" },
@@ -449,7 +450,7 @@ export default function ContentDetailModal({
                         setIsEditingCaption(true);
                         setEditedCaption(content.caption);
                       }}
-                      src="/assets/icon/edit.svg"
+                      src={withBasePath("/assets/icon/edit.svg")}
                       style={{
                         width: 16,
                         height: 16,
@@ -508,7 +509,7 @@ export default function ContentDetailModal({
                 >
                   <CardMedia
                     component="img"
-                    src="/assets/icon/retry.svg"
+                    src={withBasePath("/assets/icon/retry.svg")}
                     sx={{ width: 18, height: 18 }}
                   />
                   <Typography fontWeight={600} fontSize={14}>
@@ -523,7 +524,7 @@ export default function ContentDetailModal({
                 >
                   <CardMedia
                     component="img"
-                    src="/assets/icon/retry.svg"
+                    src={withBasePath("/assets/icon/retry.svg")}
                     sx={{ width: 18, height: 18 }}
                   />
                   <Typography fontWeight={600} fontSize={14}>
