@@ -3,8 +3,8 @@ const nextConfig = {
   reactStrictMode: false, // 일시적으로 비활성화 (INICIS 중복 요청 방지)
   // Disable x-powered-by header
   poweredByHeader: false,
-  // Set base path to /service for Vercel proxy
-  basePath: '/service',
+  // No basePath - app will be at subdomain root
+  // basePath: '/service',
   // Allow INICIS domains
   async headers() {
     return [
