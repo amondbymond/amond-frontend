@@ -1,52 +1,56 @@
 # Deployment Configuration
 
-## Important: Domain Routing Setup
+## Important: Domain Routing Setup with Vercel Proxy
 
-The application is configured to work with two scenarios:
+The application uses a two-part architecture:
+1. **Landing Page**: Hosted on Vercel at `mond.io.kr`
+2. **Main App**: Hosted on AWS Amplify, accessed via `/service`
 
-### 1. Amplify Default URL (works out of the box)
-- URL: `https://main.dpvdj8dsmc7us.amplifyapp.com/`
-- No additional configuration needed
+## How It Works
 
-### 2. Custom Domain (mond.io.kr)
-- URL: `https://mond.io.kr/`
-- The app is now configured WITHOUT a basePath
+### Vercel Proxy Configuration
+The landing page on Vercel has rewrites configured:
+```javascript
+// When user goes to mond.io.kr/service
+source: '/service'
+destination: 'https://main.dpvdj8dsmc7us.amplifyapp.com/'
 
-## Configuration Changes Made
+// For subpaths like /service/login
+source: '/service/:path+'
+destination: 'https://main.dpvdj8dsmc7us.amplifyapp.com/:path+'
+```
 
-1. **Removed basePath from next.config.js**
-   - Previously: `basePath: '/service'`
-   - Now: No basePath (commented out)
+### Next.js Configuration
+The Amplify app MUST have:
+```javascript
+basePath: '/service'
+```
 
-2. **Updated paths utility**
-   - `withBasePath()` now returns paths as-is
-   - No path manipulation needed
+This ensures:
+- Static assets load from `/service/_next/...`
+- Internal routing works correctly
+- The app functions properly when proxied
 
-## Domain Configuration Options
+## URLs
 
-### Option A: Serve at root domain (Current Setup)
-- App accessible at: `https://mond.io.kr/`
-- No `/service` subdirectory needed
-- This is the current configuration
+### Direct Access (for testing)
+- Amplify URL: `https://main.dpvdj8dsmc7us.amplifyapp.com/service`
+- All routes will have `/service` prefix
 
-### Option B: If you need to serve at /service
-1. Uncomment `basePath: '/service'` in `next.config.js`
-2. Configure your domain/CDN to:
-   - Route `mond.io.kr/service/*` → Amplify app
-   - Or use a subdomain like `service.mond.io.kr`
+### Production Access (via Vercel proxy)
+- User visits: `https://mond.io.kr/service`
+- Vercel proxies to Amplify
+- User sees the app at `/service` path
 
-## AWS Amplify Custom Domain Settings
+## Key Points
 
-In AWS Amplify Console:
-1. Go to App settings → Domain management
-2. Add custom domain: `mond.io.kr`
-3. If serving at subdirectory, configure rewrites:
-   - Source: `/service/<*>`
-   - Target: `/<*>`
-   - Type: 200 (Rewrite)
+1. **DO NOT remove `basePath: '/service'`** - it's required for the proxy setup
+2. The `withBasePath()` utility returns paths as-is because Next.js handles it
+3. All internal links automatically get `/service` prefix from Next.js
 
 ## Testing
-- After deployment, test both:
-  - `https://mond.io.kr/` (should work with current config)
-  - Static assets loading correctly
-  - API calls to backend
+After deployment:
+1. Test direct Amplify URL: `https://main.dpvdj8dsmc7us.amplifyapp.com/service`
+2. Test via proxy: `https://mond.io.kr/service`
+3. Verify static assets load correctly
+4. Check API calls work properly

@@ -1,6 +1,6 @@
 // Helper to get the correct path with basePath
 export const getBasePath = () => {
-  // No basePath needed since we're handling routing at infrastructure level
+  // Return empty string because Next.js handles basePath automatically
   return '';
 };
 
@@ -10,6 +10,7 @@ export const withBasePath = (path: string) => {
     return path;
   }
   
-  // Just return the path as-is
+  // Next.js automatically handles basePath when it's set in next.config.js
+  // So we just return the path as-is
   return path;
 };
