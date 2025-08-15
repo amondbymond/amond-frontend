@@ -24,9 +24,9 @@ export default function Document() {
         />
         <meta
           property="og:image"
-          content="https://app.mond.io.kr/thumbnail.png"
+          content="https://service.mond.io.kr/thumbnail.png"
         />
-        <meta property="og:url" content="https://app.mond.io.kr" />
+        <meta property="og:url" content="https://service.mond.io.kr" />
         <meta property="og:type" content="website" />
       </Head>
       <body>

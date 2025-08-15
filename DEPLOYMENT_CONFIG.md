@@ -4,7 +4,7 @@
 
 The application uses a subdomain setup:
 1. **Landing Page**: Hosted on Vercel at `mond.io.kr`
-2. **Main App**: Hosted on AWS Amplify at `app.mond.io.kr`
+2. **Main App**: Hosted on AWS Amplify at `service.mond.io.kr`
 
 ## Configuration
 
@@ -16,7 +16,7 @@ The application uses a subdomain setup:
 
 ### URLs
 - Landing Page: `https://mond.io.kr`
-- Main App: `https://app.mond.io.kr`
+- Main App: `https://service.mond.io.kr`
 - API Backend: `https://api.mond.io.kr`
 
 ## DNS Setup
@@ -24,7 +24,7 @@ The application uses a subdomain setup:
 Add these DNS records:
 ```
 Type: CNAME
-Name: app
+Name: service
 Value: [Your Amplify domain - e.g., main.dpvdj8dsmc7us.amplifyapp.com]
 ```
 
@@ -32,7 +32,7 @@ Value: [Your Amplify domain - e.g., main.dpvdj8dsmc7us.amplifyapp.com]
 
 1. In Amplify Console:
    - Go to App settings → Domain management
-   - Add custom domain: `app.mond.io.kr`
+   - Add custom domain: `service.mond.io.kr`
    - No rewrites needed
 
 2. SSL Certificate:
@@ -41,12 +41,12 @@ Value: [Your Amplify domain - e.g., main.dpvdj8dsmc7us.amplifyapp.com]
 ## Backend CORS Update
 
 Update backend CORS to allow:
-- `https://app.mond.io.kr`
+- `https://service.mond.io.kr`
 - `https://mond.io.kr` (if needed)
 
 ## Testing
 1. Direct Amplify URL: `https://main.dpvdj8dsmc7us.amplifyapp.com`
-2. Subdomain: `https://app.mond.io.kr`
+2. Subdomain: `https://service.mond.io.kr`
 3. Verify all assets load correctly
 4. Check API calls work properly
 
