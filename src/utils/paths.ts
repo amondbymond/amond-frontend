@@ -1,6 +1,7 @@
 // Helper to get the correct path with basePath
 export const getBasePath = () => {
-  return process.env.NODE_ENV === 'production' ? '/service' : '/service';
+  // No basePath needed since we're handling routing at infrastructure level
+  return '';
 };
 
 export const withBasePath = (path: string) => {
@@ -9,7 +10,6 @@ export const withBasePath = (path: string) => {
     return path;
   }
   
-  // Next.js automatically handles basePath, so we just return the path as-is
-  // The basePath in next.config.js will be automatically prepended
+  // Just return the path as-is
   return path;
 };

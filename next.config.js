@@ -3,8 +3,8 @@ const nextConfig = {
   reactStrictMode: false, // 일시적으로 비활성화 (INICIS 중복 요청 방지)
   // Disable x-powered-by header
   poweredByHeader: false,
-  // Set base path to /service
-  basePath: '/service',
+  // Remove basePath - will handle routing at infrastructure level
+  // basePath: '/service',
   // Allow INICIS domains
   async headers() {
     return [
