@@ -2,10 +2,7 @@
 
 // Check for required environment variables
 const requiredEnvVars = [
-  'NEXT_PUBLIC_API_URL',
-  'NEXT_PUBLIC_AMPLIFY_AUTH_REGION',
-  'NEXT_PUBLIC_AMPLIFY_AUTH_USER_POOL_ID',
-  'NEXT_PUBLIC_AMPLIFY_AUTH_USER_POOL_WEB_CLIENT_ID'
+  'NEXT_PUBLIC_API_URL'
 ];
 
 console.log('Checking environment variables...');
